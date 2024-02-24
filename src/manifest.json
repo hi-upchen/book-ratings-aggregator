@@ -1,0 +1,31 @@
+{
+	"manifest_version": 3,
+	"name": "書評分數顯示",
+	"version": "0.0.1",
+	"icons": {
+		"16": "images/book-rating.png",
+		"32": "images/book-rating.png",
+		"48": "images/book-rating.png",
+		"128": "images/book-rating.png"
+	},
+	"action": {
+		"default_popup": "popup/hello.html",
+		"default_icon": "popup/hello.png"
+	},
+	"background": {
+		"service_worker": "scripts/background.ts",
+		"type": "module"
+	},
+	"content_scripts": [
+		{
+			"js": [ "content/content.ts" ],
+			"css" : ["content/content.scss"],
+			"matches": [
+				"https://www.kobo.com/tw/zh/*"
+			]
+		}
+	],
+	"host_permissions": [
+		"https://www.goodreads.com/*"
+  ]
+}

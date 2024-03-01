@@ -2,7 +2,7 @@
   flex: 1;
   flex-direction: row;
   align-items: center;
-  display: flex;
+  display: flex !important;
   text-decoration: none !important;
 
   .goodreads-icon {
@@ -27,6 +27,10 @@
 
   .staticStar {
     margin-right: 4px;
+    width: 17px;
+    height: 17px;
+    display: inline-block;
+    background-repeat: no-repeat;
   }
 
   .star.off,
@@ -75,3 +79,10 @@
   }
 
 }
+
+.result-items {
+  .goodreads-ratings-summary .staticStar {
+    margin-right: 0;
+  }
+}
+

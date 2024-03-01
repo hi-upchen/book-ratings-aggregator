@@ -3,19 +3,24 @@ console.log('background scripting is executing!!')
 import * as cheerio from 'cheerio';
 
 function isChinese(str: string): boolean {
-  // Regular expression to match Chinese characters (both simplified and traditional)
+	// Regular expression to match Chinese characters (both simplified and traditional)
 	const cleanstr = str.replace(/[^\u4E00-\u9FFF\u3400-\u4DBFa-zA-Z]/g, '');
-  const chineseRegex: RegExp = /^[\u4E00-\u9FFF\u3400-\u4DBF]+$/;
-  return chineseRegex.test(cleanstr);
+	const chineseRegex: RegExp = /^[\u4E00-\u9FFF\u3400-\u4DBF]+$/;
+	return chineseRegex.test(cleanstr);
 }
 
 function isEnglish(str: string): boolean {
-  // Regular expression to match English letters
+	// Regular expression to match English letters
 	const cleanstr = str.replace(/[^\u4E00-\u9FFF\u3400-\u4DBFa-zA-Z]/g, '');
-  const englishRegex: RegExp = /^[a-zA-Z]+$/;
-  return englishRegex.test(cleanstr);
+	const englishRegex: RegExp = /^[a-zA-Z]+$/;
+	return englishRegex.test(cleanstr);
 }
 
+function containsChinese(str: string): boolean {
+	// Regular expression to match Chinese characters
+	const chineseRegex: RegExp = /[\u4E00-\u9FFF]/;
+	return chineseRegex.test(str);
+}
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -31,11 +36,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			// Handle other types of messages
 			// ...
 		} else if (message.type === 'FETCH_RATING_WITH_BOOK_TITLE') {
+			// Generate the storage key
+			const storageKey = message.data.title + (message.data.subtitle ? '-' + message.data.subtitle : '');
 
-			console.log('got message FETCH_RATING_WITH_BOOK_TITLE', message)
-
-			let response = await fetchGoodreadsRatingbyBookName(message.data)
-			sendResponse(response)
+			// Check if the book rating is stored locally
+			chrome.storage.local.get(storageKey, async (result) => {
+				const storedData = result[storageKey];
+				if (storedData) {
+					// Use stored data
+					// console.log('Found stored data with rating for', storageKey, storedData);
+					sendResponse(storedData);
+				} else {
+					// Fetch from Goodreads
+					console.log('Search Goodreads:', message.data);
+					let response = await fetchGoodreadsRatingbyBookName(message.data);
+					// Save fetched data to local storage
+					const timestamp = Date.now();
+					chrome.storage.local.set({ [storageKey]: { ...response, timestamp } });
+					chrome.storage.local.set({ [message.data.title]: { ...response, timestamp } });
+					sendResponse(response);
+				}
+			});
 		}
 	})()
 
@@ -45,15 +66,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) => {
 	// fetchGoodreadsRatingbyBookName(bookName: string)
 	let found = false
-	let greadsBookUrl, 
-		greadsBookTitle, 
-		rating, 
+	let greadsBookUrl,
+		greadsBookTitle,
+		rating,
 		numRatings
 
 	let bookTitleToSearch = title
-	if (subtitle && isEnglish(subtitle)) {
+	if (subtitle && !containsChinese(subtitle)) {
 		bookTitleToSearch = subtitle
-		console.log(`Use english book name ${bookTitleToSearch} to search instead of ${title}`)
+		console.log(`Use original book name ${bookTitleToSearch} to search instead of ${title}`)
 	}
 
 	// Step 1: Fetch HTML content of webpage
@@ -61,19 +82,13 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) => {
 	const htmlContent = await response.text();
 
 	// Step 2: Create a new HTML document
-	// const doc = document.createElement('div');
-	// doc.innerHTML = htmlContent
-	// const parser = new DOMParser();
-	// const doc = parser.parseFromString(htmlContent, 'text/html');
-	// Step 4: Use Cheerio selectors to find the element in the fetched HTML
 	const $ = cheerio.load(htmlContent);
 
 	const foundBookEl = $('table.tableList tr[itemtype="http://schema.org/Book"]').first();
-	console.log('foundBookEl', foundBookEl);
 
 	if (!foundBookEl.length) {
 		console.warn(`Cannot find book with name ${title}`);
-		return { found, rating, numRatings};
+		return { found, rating, numRatings };
 	}
 
 	found = true
@@ -81,21 +96,17 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) => {
 	foundBookEl.find('a.bookTitle').each((index, element) => {
 		greadsBookUrl = $(element).attr('href');
 		greadsBookTitle = $(element).text().trim();
-		console.log('greadsBookUrl', greadsBookUrl);
-		console.log('greadsBookTitle', greadsBookTitle);
 	});
 
 	foundBookEl.find('.minirating').each((index, element) => {
 		const minratingTxt = $(element).text() || '';
-		const ratingRegex = /(\d+\.\d{2}) avg rating — ([\d,]+) ratings/;
+		const ratingRegex = /(\d+\.\d{2}) avg rating — ([\d,]+) rating/;
 		const match = minratingTxt.match(ratingRegex);
 		if (match) {
 			rating = parseFloat(match[1]);
 			numRatings = parseInt(match[2].replace(/,/g, ''));
-			console.log('Rating:', rating);
-			console.log('Number of Ratings:', numRatings);
 		} else {
-			console.log('No match found for string:', minratingTxt);
+			console.warn('No match found for string:', minratingTxt);
 		}
 	});
 
@@ -103,9 +114,43 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) => {
 	// Do something with the target element
 	// console.log(targetElement);
 
-	return { found, 
-		rating, 
+	return {
+		found,
+		rating,
 		numRatings,
 		url: `https://www.goodreads.com${greadsBookUrl}`,
-		title: greadsBookTitle } || {}
+		title: greadsBookTitle
+	} || {}
 }
+
+
+/**
+ * Cleans cached Goodreads data based on specified criteria.
+ * Deletes entries from local storage according to timestamp and response properties.
+ */
+const cleanSomeCachedGoodreads = () => {
+	chrome.storage.local.get(null, (result) => {
+			Object.keys(result).forEach((key) => {
+					// Check timestamp and response properties
+					const { timestamp, found, numReviews } = result[key];
+					const now = Date.now();
+					const daysElapsed = timestamp ? (now - timestamp) / (1000 * 60 * 60 * 24) : 21;
+
+					// Check conditions for deletion
+					if (!found && daysElapsed >= 3 && Math.random() < 0.3) {
+							chrome.storage.local.remove(key);
+							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+					} else if (numReviews <= 100 && daysElapsed >= 7 && Math.random() < 0.3) {
+							chrome.storage.local.remove(key);
+							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+					} else if (numReviews <= 1000 && daysElapsed >= 14 && Math.random() < 0.3) {
+							chrome.storage.local.remove(key);
+							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+					} else if (numReviews > 1000 && daysElapsed >= 14 && Math.random() < 0.1) {
+							chrome.storage.local.remove(key);
+							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+					}
+			});
+	});
+}
+cleanSomeCachedGoodreads()

@@ -34,7 +34,7 @@ if (location.href.match(/^https:\/\/www\.kobo\.com\/.*\/ebook\/.*/)) {
 	bookSubTitle = bookSubTitle ? bookSubTitle.trim() : null
 
 	if (bookTitle || bookSubTitle) {
-		console.log('sendMessage', bookTitle, bookSubTitle)
+		// console.log('sendMessage', bookTitle, bookSubTitle)
 		// Send a message to the background script
 		chrome.runtime.sendMessage({
 			type: 'FETCH_RATING_WITH_BOOK_TITLE',
@@ -67,7 +67,7 @@ const handleBookList = () => {
 			return
 		}
 
-		console.log('sendMessage detail', bookTitle)
+		// console.log('sendMessage detail', bookTitle)
 		// Send a message to the background script
 		chrome.runtime.sendMessage({
 			type: 'FETCH_RATING_WITH_BOOK_TITLE',

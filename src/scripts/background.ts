@@ -72,7 +72,10 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) => {
 		numRatings
 
 	let bookTitleToSearch = title
-	if (subtitle && !containsChinese(subtitle)) {
+	if ( !containsChinese(title)) {
+		bookTitleToSearch = title
+		console.log(`Use non-chinese book name ${bookTitleToSearch} to search`)
+	} else if (subtitle && !containsChinese(subtitle)) {
 		bookTitleToSearch = subtitle
 		console.log(`Use original book name ${bookTitleToSearch} to search instead of ${title}`)
 	}

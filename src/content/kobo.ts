@@ -107,19 +107,30 @@ export const generateBookPageRatingDiv = ({ goodreads: { rating, numRatings, url
 	// Append the rating stars div to the "a" element
 	aElement.appendChild(ratingStarsDiv);
 
-
 	// Create and append the icon element
 	const iconSpan = document.createElement('span');
 	iconSpan.classList.add('goodreads-icon');
 	aElement.appendChild(iconSpan);
 
-	// Create and append the total ratings span
+	const leftParenthesis = document.createElement('span');
+	leftParenthesis.textContent = '(';
+	aElement.appendChild(leftParenthesis);
+
+	// Add ratings
 	const totalRatingsSpan = document.createElement('span');
-	totalRatingsSpan.classList.add('total-ratings');
-	totalRatingsSpan.setAttribute('aria-hidden', 'true');
-	totalRatingsSpan.setAttribute('translate', 'no');
-	totalRatingsSpan.textContent = '(' + numRatings.toLocaleString() + ')';
+	totalRatingsSpan.classList.add('bra-ratings');
+	totalRatingsSpan.textContent = rating
 	aElement.appendChild(totalRatingsSpan);
+
+	// Add num of ratings
+	const numRatingsSpan = document.createElement('span');
+	numRatingsSpan.classList.add('bra-num-ratings');
+	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
+	aElement.appendChild(numRatingsSpan);
+
+	const rightParenthesis = document.createElement('span');
+	rightParenthesis.textContent = ')';
+	aElement.appendChild(rightParenthesis);
 
 	return aElement
 }
@@ -151,7 +162,7 @@ export const renderScore2KoboBookBlock = async (bookBlockEL, { goodreads }) => {
 		return
 	}
 
-	let el = generateBookBlockRatingDiv({goodreads})
+	let el = generateBookBlockRatingDiv_inNumbers({goodreads})
 
 	// wrap into div
 	const bookBlockRating = document.createElement('div');
@@ -161,7 +172,56 @@ export const renderScore2KoboBookBlock = async (bookBlockEL, { goodreads }) => {
 	priceElement.insertAdjacentHTML('beforebegin', bookBlockRating.outerHTML);
 }
 
-export const generateBookBlockRatingDiv = ({ goodreads }): HTMLElement => {
+function formatNumberToKMStyle(num) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'm';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(num>10000 ? 0:1) + 'k';
+  } else {
+    return num.toLocaleString();
+  }
+}
+
+export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement => {
+	const maxRating = 5
+	let { rating, numRatings, url, title } = goodreads
+	
+	// Create a div element for the star rating
+	const ratingDiv = document.createElement('div');
+	ratingDiv.classList.add('goodreads-ratings-summary');
+	ratingDiv.setAttribute('aria-label', `Rated ${rating} out of 5 stars`);
+	ratingDiv.setAttribute('translate', 'no');
+
+	// Create and append the icon element
+	const iconSpan = document.createElement('span');
+	iconSpan.classList.add('goodreads-icon');
+	ratingDiv.appendChild(iconSpan);
+
+	// Add an start
+	const starLi = document.createElement('span');
+	// starLi.classList.add('star', 'full');
+	starLi.classList.add('star', 'staticStar', 'p10');
+	starLi.setAttribute('role', 'presentation');
+	ratingDiv.appendChild(starLi);
+
+	// Add ratings
+	const totalRatingsSpan = document.createElement('span');
+	totalRatingsSpan.classList.add('bra-ratings');
+	totalRatingsSpan.textContent = rating
+	ratingDiv.appendChild(totalRatingsSpan);
+
+	// Add num of ratings
+	const numRatingsSpan = document.createElement('span');
+	numRatingsSpan.classList.add('bra-num-ratings');
+	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
+	ratingDiv.appendChild(numRatingsSpan);
+
+	return ratingDiv;
+
+
+}
+
+export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }): HTMLElement => {
 	const maxRating = 5
 	let { rating, numRatings, url, title } = goodreads
 	

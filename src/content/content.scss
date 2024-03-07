@@ -2,7 +2,7 @@
   flex: 1;
   flex-direction: row;
   align-items: center;
-  display: flex !important;
+  display: flex;
   text-decoration: none !important;
 
   .goodreads-icon {
@@ -14,6 +14,7 @@
     background-image: url("data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%20viewBox%3D%220%200%20122.88%20122.881%22%20enable-background%3D%22new%200%200%20122.88%20122.881%22%20xml%3Aspace%3D%22preserve%22%3E%3Cg%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23E7E3C7%22%20d%3D%22M16.379%2C0h90.122c9.009%2C0%2C16.379%2C7.371%2C16.379%2C16.379v90.122%20c0%2C9.009-7.37%2C16.38-16.379%2C16.38H16.379C7.371%2C122.881%2C0%2C115.51%2C0%2C106.501V16.379C0%2C7.371%2C7.371%2C0%2C16.379%2C0L16.379%2C0z%22%3E%3C%2Fpath%3E%3Cpath%20fill%3D%22%236C3D0D%22%20d%3D%22M61.661%2C25.795c-6.29%2C0-11.108%2C2.514-14.427%2C6.549c-3.796%2C4.615-5.716%2C11.237-5.716%2C18.447%20c0%2C7.221%2C1.859%2C13.573%2C5.42%2C17.972c3.203%2C3.956%2C7.851%2C6.349%2C13.824%2C6.349c6.332%2C0%2C11.27-2.457%2C14.685-6.444%20c3.811-4.448%2C5.803-10.819%2C5.803-17.876c0-0.064%2C0.003-0.129%2C0.009-0.192l0.001-0.093h-0.009c0-6.404-1.729-12.644-5.091-17.262%20c-3.248-4.462-8.061-7.411-14.34-7.456l-0.159-0.001V25.795L61.661%2C25.795z%20M81.355%2C71.712c-1.327%2C1.746-2.896%2C3.279-4.634%2C4.585%20c-4.561%2C3.427-10.285%2C5.278-15.833%2C5.278c-8.188%2C0-14.444-3.276-18.772-8.521c-4.7-5.695-7.043-13.695-7.043-22.263%20c0-8.867%2C2.463-16.973%2C7.262-22.739c4.495-5.401%2C10.972-8.729%2C19.326-8.729c5.821%2C0%2C11.037%2C1.996%2C15.135%2C5.294%20c1.736%2C1.398%2C3.27%2C3.029%2C4.56%2C4.841v-8.275h6.451v58.564c0%2C8.561-2.335%2C14.968-6.635%2C19.326%20c-4.499%2C4.563-11.032%2C6.776-19.187%2C6.776c-6.623%2C0-12.788-1.722-17.215-5.58c-3.928-3.422-6.427-8.451-6.597-15.348v-0.039h6.451%20l-0.001%2C0.073c0.215%2C4.853%2C1.93%2C8.297%2C4.589%2C10.573%20c3.133%2C2.682%2C7.661%2C3.851%2C12.664%2C3.851c6.41%2C0%2C11.369-1.577%2C14.631-4.854%20c3.163-3.178%2C4.849-8.063%2C4.849-14.778V71.712L81.355%2C71.712z%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E") !important;
 
     background-size: contain;
+    background-repeat: no-repeat;
     width: 25px;
     height: 25px;
     display: inline-block;
@@ -78,6 +79,23 @@
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAABwElEQVR4Ab2WNbDVQBSGg0uLu+y5wUoqKrxHW0pK3B0q3N11N7hLg9e49A0VLrsXD/lmeK7RnVk95/+/3Mh5z0vafpyRoXSv6FY2spJeONga9YJeKPTHOX+w1Sqksy7wNpeWVYBZF3mbn1WAWRcC/R4M9iugFZ2zIt7mJbXBnOUOtlqe1AZzlu9tPqMEUH2dWG7gciCLGgITi2mmprmgtL2s1V5r5JAzcjzqgTPqfLS/arXcclruOK0eRvv3DYGJkUMuGrR44IUn3jBgwfTCq8M7RgKDuIgOC6ZX0aKDuc6o33kB8YbRwKfij7Va3mUNxRPvxp/5+SH9rJHHWUHxwtNrTgvPjOjgjJxIC8UDLy9uc1pmReJfCYC/0KYrGro0Pi4YTRa1eVRcMJrUYBeodXHBaDL5FycuGE0qqDOqT4qC0Sf5rw3U9IZLn+yiNxRHm+IXy6V6TD8440+syGHNWe08tImg4ZlhbSPx11oF/mF9t5AzYrXAX/GIDaa2VgP+sUatCc9MbdVQPjFyyK3Q4ZGkam36f+Vv4nyX5KJBi0eCz0he88c8vOp3jqtFgxaPeMLzQ3q4oDTTS9nwwKu+2D9N9rM09Bxb/wAAAABJRU5ErkJggg==") !important;
   }
 
+  .bra-ratings {
+    font-weight: bold;
+    display: inline-block;
+    text-decoration: none !important;
+  }
+
+  .bra-num-ratings {
+    &::before {
+      padding: 0.4rem;
+      content: "\B7";
+    }
+
+    color: #707070;
+    display: inline-block;
+    text-decoration: none !important;
+  }
+
 }
 
 .result-items {
@@ -86,3 +104,38 @@
   }
 }
 
+.carousel-body-container { // in the list
+  // a:not(.bra-rating) {
+  //   text-decoration: underline; /* Reapply underline style to all text inside 'a' element except the ones with class 'rating' */
+  // }
+
+  .goodreads-ratings-summary {
+
+    display: inline-flex;
+    text-decoration: none;
+
+    .goodreads-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.4rem;
+    }
+
+    .staticStar {
+      margin-right: 0;
+    }
+
+    .bra-ratings {
+      font-size: 90%;
+      
+    }
+
+    .bra-num-ratings {
+      &::before {
+        padding: 0.4rem;
+        content: "\B7";
+      }
+
+      font-size: 90%;
+    }
+  }
+}

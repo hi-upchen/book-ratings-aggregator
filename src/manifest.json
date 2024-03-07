@@ -1,16 +1,12 @@
 {
 	"manifest_version": 3,
-	"name": "書評分數顯示",
-	"version": "0.0.1",
+	"name": "顯示書評分數 | 在 Kobo 網站顯示 Goodreads 書評分數",
+	"version": "1.0.0",
 	"icons": {
 		"16": "images/book-rating.png",
 		"32": "images/book-rating.png",
 		"48": "images/book-rating.png",
 		"128": "images/book-rating.png"
-	},
-	"action": {
-		"default_popup": "popup/hello.html",
-		"default_icon": "popup/hello.png"
 	},
 	"background": {
 		"service_worker": "scripts/background.ts",
@@ -21,11 +17,15 @@
 			"js": [ "content/content.ts" ],
 			"css" : ["content/content.scss"],
 			"matches": [
-				"https://www.kobo.com/tw/zh/*"
+				"https://www.kobo.com/tw/zh/*",
+				"https://www.kobo.com/hk/zh/*"
 			]
 		}
 	],
 	"host_permissions": [
 		"https://www.goodreads.com/*"
+  ],
+	"permissions": [
+    "storage"
   ]
 }

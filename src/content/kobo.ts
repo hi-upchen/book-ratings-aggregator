@@ -10,6 +10,9 @@ export const cleanBookTitle = (title: string): string => {
 	// Remove text between "【" and "】"
 	cleanTitle = cleanTitle.replace(/【[^【】]*】/g, '');
 
+	// for pchome
+	cleanTitle = cleanTitle.replace(/\([^\(\))]*\)/g, '');
+
 	return cleanTitle.trim();
 }
 
@@ -217,8 +220,6 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement
 	ratingDiv.appendChild(numRatingsSpan);
 
 	return ratingDiv;
-
-
 }
 
 export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }): HTMLElement => {
@@ -278,9 +279,9 @@ export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }): HTMLElement
 }
 
 export const renderScore2KoboSearhResultItem = async (bookItemEl, {goodreads}) => {
-		// find the target place
+	// find the target place
 	// const targetElement = document.querySelector('#RatingsBrief');
-	console.log('bookItemEl', bookItemEl)
+	// console.log('bookItemEl', bookItemEl)
 	const targetElement = bookItemEl.querySelector('.star-rating');
 
 	// Check if the target element exists

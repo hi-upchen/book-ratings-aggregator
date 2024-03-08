@@ -139,3 +139,50 @@
     }
   }
 }
+
+// pchome styles 
+
+.ecsite-layout.style_book {
+  dl#ProdGridContainer {
+    dd {
+      height: 211px;
+    }
+  }
+
+  .goodreads-ratings-summary {
+    .staticStar {
+      margin-right: 0;
+    }
+
+    .bra-ratings {
+      // font-size: 90%;
+      
+    }
+
+    .bra-num-ratings {
+      &::before {
+        padding: 0.2rem;
+        // content: "\B7";
+      }
+
+      // font-size: 90%;
+    }
+  }
+
+  #ProdListContainer {
+    .bra-ratings {
+      color: #999;
+    }
+    .bra-num-ratings {
+      color: #999;
+    }
+  }
+
+  // the book detail page
+  #DescrbContainer {
+    .goodreads-ratings-summary {
+      margin-top: 10px;
+    }
+  }
+}
+

@@ -18,7 +18,8 @@
 			"css" : ["content/content.scss"],
 			"matches": [
 				"https://www.kobo.com/tw/zh/*",
-				"https://www.kobo.com/hk/zh/*"
+				"https://www.kobo.com/hk/zh/*",
+				"https://24h.pchome.com.tw/books/*"
 			]
 		}
 	],

@@ -184,5 +184,23 @@
       margin-top: 10px;
     }
   }
+
+  // region 精選書單
+  #Block4Container {
+    dd {
+      .goodreads-ratings-summary {
+        justify-content: center;
+      }
+    }
+    dd.mL {
+      .goodreads-ratings-summary {
+        justify-content: left;
+      }
+    }
+  }
+
+  #newarrival, #salesrank {
+    font-size: 90%;
+  }
 }
 

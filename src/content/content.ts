@@ -8,7 +8,8 @@ import { cleanBookTitle,
 
 import {renderScore2PchomeRowList, 
 	renderScore2PchomeGridList,
-	renderScore2PchomeBookPage} from './pchome.ts'
+	renderScore2PchomeBookPage,
+	renderScore2PchomeRegionBlock4} from './pchome.ts'
 
 
 // Kobo Site
@@ -176,7 +177,8 @@ if (location.href.match(/24h.pchome.com.tw\/books\/prod*/)) { // book detail pag
 
 	////// grid book list
 	const handlePchomeBookGridList = () => {
-		let bookDetailContainerEls = document.querySelectorAll('#ProdGridContainer .prod_info')
+		// let bookDetailContainerEls = document.querySelectorAll('#ProdGridContainer .prod_info')
+		let bookDetailContainerEls = document.querySelectorAll('.prod_info')
 
 		bookDetailContainerEls.forEach((bookDetailContainerEl, idx) => {
 			let bookTitle, bookSubTitle
@@ -283,4 +285,54 @@ if (location.href.match(/24h.pchome.com.tw\/books\/prod*/)) { // book detail pag
 		});
 	}
 	registerMonitorPageChanges()
+} else if (location.href.match(/pchome.com.tw\/books\/region*/) || location.href.match(/pchome.com.tw\/books\/newarrival*/)) { // region home page
+	const handlePchomeRegionHomePageGridList = () => {
+		// let bookDetailContainerEls = document.querySelectorAll('#Block2Container .prod_info, #Block4Container .prod_info, #Block5Container .prod_info, #newarrival')
+		let bookDetailContainerEls = document.querySelectorAll('.prod_info')
+
+		bookDetailContainerEls.forEach((bookDetailContainerEl, idx) => {
+			let bookTitle, bookSubTitle
+
+			// fetch book title
+			const bookTitleEl = bookDetailContainerEl.querySelector('.prod_name a')
+
+			// Initialize an empty string to store the extracted text
+			bookTitle = '';
+			// Iterate through the child nodes of the <a> element
+			bookTitleEl.childNodes.forEach(node => {
+				// console.log('node.nodeName.toLowerCase()', node.nodeName.toLowerCase(), node)
+				if (node.nodeType === Node.TEXT_NODE || node.nodeName.toLowerCase() === 'b') { 
+					// console.log('node.nodeType', node.nodeName, node.nodeType, node, node.textContent)
+					bookTitle += node.textContent;
+				}
+			});
+
+			// bookTitle = bookTitleEl?.firstChild?.textContent
+			bookTitle = bookTitle ? cleanBookTitle(bookTitle) : null
+
+			if (!bookTitle || bookTitle === '') {
+				return
+			}
+
+			console.log('sendMessage detail', bookTitle)
+			// Send a message to the background script
+			chrome.runtime.sendMessage({
+				type: 'FETCH_RATING_WITH_BOOK_TITLE',
+				data: { title: bookTitle, subtitle: null }
+			}, {}, (response) => {
+				// Handle response from the background script
+				console.log('Received ', bookTitle, response);
+
+				if (response.found) {
+					renderScore2PchomeRegionBlock4(bookDetailContainerEl, { goodreads: response })
+				}
+			});
+
+			return
+		})
+	}
+
+	setTimeout(() => {
+		handlePchomeRegionHomePageGridList()	
+	}, 500);
 }

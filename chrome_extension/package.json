@@ -1,0 +1,23 @@
+{
+  "name": "book-ratings-aggregator",
+  "version": "1.0.0",
+  "description": "Displaying Goodreads ratings while browsing Kobo books, enhancing your discovery process, ensuring you don't miss out on great reads.",
+  "repository": "https://github.com/hi-upchen/book-ratings-aggregator",
+  "author": "Up Chen <hi.upchen@gmail.com>",
+  "license": "GPL-3.0",
+  "scripts": {
+    "start": "parcel watch src/manifest.json --host localhost --config @parcel/config-webextension",
+    "build": "parcel build src/manifest.json --config @parcel/config-webextension",
+    "pack:zip": "rm -rf dist && yarn run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. "
+  },
+  "devDependencies": {
+    "@parcel/config-webextension": "^2.11.0",
+    "@parcel/transformer-sass": "2.11.0",
+    "@types/chrome": "^0.0.263",
+    "buffer": "^5.5.0||^6.0.0",
+    "parcel": "^2.12.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
+  }
+}

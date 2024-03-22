@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  nextjs:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./server:/app
+      - ./secrets/server-env:/app/.env
+    command: npm run start
+

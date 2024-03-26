@@ -181,7 +181,15 @@ cleanSomeCachedGoodreads()
 
 const sendDataToServer = async (data) => {
 	try {
-		const serverResponse = await fetch('http://localhost:3000/api/book', {
+		let serverUrl = '';
+
+		if (process.env.NODE_ENV === 'development') {
+				serverUrl = 'http://localhost:3000/api/book';
+		} else {
+				serverUrl = 'https://book-ratings-aggregator.runawayup.com/api/book';
+		}
+
+		const serverResponse = await fetch(serverUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

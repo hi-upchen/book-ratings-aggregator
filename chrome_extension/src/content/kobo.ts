@@ -17,6 +17,8 @@ export const cleanBookTitle = (title: string): string => {
 
 	// for pchome
 	cleanTitle = cleanTitle.replace(/\([^\(\))]*\)/g, '');
+	// for pchome
+	cleanTitle = cleanTitle.replace(/.*今日.*書單/g, '');
 
 	return cleanTitle.trim();
 }

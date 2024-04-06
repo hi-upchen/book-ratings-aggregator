@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					sendResponse(response);
 
 					// Send goodreads data to the server
-					fetchedBook = {goodreads: {...storedData, title: message.data.title, subtitle: message.data.subtitle}}
+					fetchedBook = {goodreads: {...response, title: message.data.title, subtitle: message.data.subtitle}}
 					sendDataToServer(fetchedBook);
 				}
 

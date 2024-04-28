@@ -38,6 +38,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			// Handle other types of messages
 			// ...
 		} else if (message.type === 'FETCH_RATING_WITH_BOOK_TITLE') {
+			console.log('FETCH_RATING_WITH_BOOK_TITLE', message.data)
+
 			// Generate the storage key
 			const storageKey = message.data.title + (message.data.subtitle ? '-' + message.data.subtitle : '');
 
@@ -73,8 +75,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					});
 				}
 			});
-
-
 		}
 	})()
 
@@ -197,7 +197,7 @@ const sendDataToServer = async (data) => {
 			body: JSON.stringify(data)
 		});
 		const responseData = await serverResponse.json();
-		console.log('sendDataToServer response:', responseData.goodreads?.title || responseData.kobo?.title ||  responseData.pchome?.title, responseData);
+		console.log('sendDataToServer response:', responseData.goodreads?.title || responseData.kobo?.title ||  responseData.pchome?.title || responseData.bokelai?.title, responseData);
 	} catch (error) {
 		console.error('Error sending data to server:', error);
 	}

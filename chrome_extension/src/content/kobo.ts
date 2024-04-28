@@ -3,25 +3,7 @@ import {
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
 
-/**
- * Cleans a book title by removing text enclosed in parentheses and brackets.
- * @param title - The original book title.
- * @returns The cleaned book title.
- */
-export const cleanBookTitle = (title: string): string => {
-	// Remove text between "（" and "）"
-	let cleanTitle = title.replace(/（[^（）]*）/g, '');
-
-	// Remove text between "【" and "】"
-	cleanTitle = cleanTitle.replace(/【[^【】]*】/g, '');
-
-	// for pchome
-	cleanTitle = cleanTitle.replace(/\([^\(\))]*\)/g, '');
-	// for pchome
-	cleanTitle = cleanTitle.replace(/.*今日.*書單/g, '');
-
-	return cleanTitle.trim();
-}
+import * as BookUtils from './../BookUtils.ts';
 
 /**
  * Extracts the rating and number of ratings from the given string.
@@ -184,7 +166,7 @@ export const generateBookPageRatingDiv = ({ goodreads }: {goodreads: RetrievedGo
 	// Add num of ratings
 	const numRatingsSpan = document.createElement('span');
 	numRatingsSpan.classList.add('bra-num-ratings');
-	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
+	numRatingsSpan.textContent = BookUtils.formatNumberToKMStyle(numRatings)
 	aElement.appendChild(numRatingsSpan);
 
 	const rightParenthesis = document.createElement('span');
@@ -231,15 +213,6 @@ export const renderScore2KoboBookBlock = async (bookBlockEL, { goodreads }: {goo
 	priceElement.insertAdjacentHTML('beforebegin', bookBlockRating.outerHTML);
 }
 
-function formatNumberToKMStyle(num) {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'm';
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(num>10000 ? 0:1) + 'k';
-  } else {
-    return num.toLocaleString();
-  }
-}
 
 export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }: {goodreads: RetrievedGoodreadsBookInfo}): HTMLElement => {
 	const maxRating = 5
@@ -272,7 +245,7 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }: {goodreads: 
 	// Add num of ratings
 	const numRatingsSpan = document.createElement('span');
 	numRatingsSpan.classList.add('bra-num-ratings');
-	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
+	numRatingsSpan.textContent = BookUtils.formatNumberToKMStyle(numRatings)
 	ratingDiv.appendChild(numRatingsSpan);
 
 	return ratingDiv;

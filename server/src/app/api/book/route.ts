@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  let {goodreads, kobo, pchome}: Partial<BookPostBody> = await request.clone().json()
+  let {goodreads, kobo, pchome, bokelai}: Partial<BookPostBody> = await request.clone().json()
 
   // console.log('goodreads', goodreads)
   // console.log('kobo', kobo)
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   try {
     const client = await pool.connect();
-    let goodreadsBookId, koboBookId, pchomeBookId
+    let goodreadsBookId, koboBookId, pchomeBookId, bokelaiBookId
 
     if (goodreads) {
       goodreadsBookId = await upsertGoodreadsBook(client, goodreads, 'goodreads_book');
@@ -33,11 +33,13 @@ export async function POST(request: Request) {
     if (pchome) {
       pchomeBookId = await upsertBook(client, pchome, 'pchome_book');
     }
+    if (bokelai) {
+      bokelaiBookId = await upsertBook(client, bokelai, 'bokelai_book');
+    }
 
     client.release();
 
-    return NextResponse.json({ status: 'OK', goodreads, kobo, pchome })
-    return NextResponse.json({ status: 'OK'})
+    return NextResponse.json({ status: 'OK', goodreads, kobo, pchome, bokelai })
   } catch (error) {
     console.error('Error executing query', error);
     return NextResponse.json({ 

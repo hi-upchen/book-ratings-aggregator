@@ -26,3 +26,12 @@ export interface RetrievedPchomeBookInfo {
   format?: "digital" | "physical";
   fetchedTimestamp?: Date;
 }
+
+export interface RetrievedBooksBookInfo {
+  title: string;
+  subtitle: string;
+  author?: string | null;
+  url?: string;
+  format?: "digital" | "physical";
+  fetchedTimestamp?: Date;
+}

@@ -2,6 +2,8 @@ import {
 	RetrievedGoodreadsBookInfo, 
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
+
+import * as BookUtils from '../BookUtils.ts';
 	
 export const renderScore2PchomeGridList = (bookItemEl, {goodreads}: {goodreads: RetrievedGoodreadsBookInfo}) => {
 	// const targetElement = document.querySelector('#RatingsBrief');
@@ -47,17 +49,6 @@ export const renderScore2PchomeRowList = (bookItemEl, {goodreads}: {goodreads: R
 	}
 }
 
-
-function formatNumberToKMStyle(num) {
-	if (num >= 1000000) {
-		return (num / 1000000).toFixed(1) + 'm';
-	} else if (num >= 1000) {
-		return (num / 1000).toFixed(num>10000 ? 0:1) + 'k';
-	} else {
-		return num.toLocaleString();
-	}
-}
-
 export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement => {
 	const maxRating = 5
 	let { rating, numRatings, url, title } = goodreads
@@ -89,7 +80,7 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement
 	// Add num of ratings
 	const numRatingsSpan = document.createElement('span');
 	numRatingsSpan.classList.add('bra-num-ratings');
-	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
+	numRatingsSpan.textContent = BookUtils.formatNumberToKMStyle(numRatings)
 	ratingDiv.appendChild(numRatingsSpan);
 
 	return ratingDiv;
@@ -118,9 +109,6 @@ export const renderScore2PchomeBookPage = (bookItemEl, {goodreads}: {goodreads: 
 		ratingBriefEl.title = `${goodreads.title} ${goodreads.rating} avg rating — ${goodreads.numRatings.toLocaleString()} ratings`;
 		ratingBriefEl.target = "_blank";
 		ratingBriefEl.appendChild(ratingEl);
-
-
-
 
 		// targetElement.insertAdjacentHTML('afterend', ratingEl.outerHTML);
 		targetElement.insertAdjacentHTML('afterend', ratingBriefEl.outerHTML);
@@ -160,25 +148,3 @@ export const renderScore2PchomeRegionBlock4 = (bookItemEl, {goodreads}: {goodrea
 		console.error('renderScore2PchomeBookPage Target element not found');
 	}
 }
-
-/**
- * Extracts the author from the given information string.
- * @param info The information string containing author details.
- * @returns The extracted author or null if not found.
- */
-export const extractAuthorFromBookInfo = (info: string): string | null => {
-	const authorRegex = /作者：(.+)/;
-	const match = info.match(authorRegex);
-	return match ? match[1] : null;
-};
-
-/**
-* Extracts the ISBN from the given information string.
-* @param info The information string containing ISBN details.
-* @returns The extracted ISBN or null if not found.
-*/
-export const extractISBNFromBookInfo = (info: string): string | null => {
-	const isbnRegex = /ISBN：(\d{13})/;
-	const match = info.match(isbnRegex);
-	return match ? match[1] : null;
-};

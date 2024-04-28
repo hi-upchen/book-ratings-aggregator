@@ -8,7 +8,7 @@
   "scripts": {
     "start": "parcel watch src/manifest.json --host localhost --config @parcel/config-webextension",
     "build": "parcel build src/manifest.json --config @parcel/config-webextension",
-    "pack:zip": "rm -rf dist && npm run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. "
+    "pack:zip": "rm -rf dist && rm -fr .parcel-cache && npm run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. "
   },
   "devDependencies": {
     "@parcel/config-webextension": "^2.11.0",

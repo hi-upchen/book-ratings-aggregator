@@ -141,7 +141,6 @@
 }
 
 // pchome styles 
-
 .ecsite-layout.style_book {
   dl#ProdGridContainer {
     dd {
@@ -204,3 +203,60 @@
   }
 }
 
+// 博客來 styles 
+.main_wrap {
+  .goodreads-ratings-summary {
+    margin-top: 5px;
+    font-size: 13px;
+  }
+}
+
+.u-index-home { // 博客來 homepage
+  .item .img-wrap .goodreads-ratings-summary {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba($color: #FFFFFF, $alpha: 0.9);
+    box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5); /* Adjust the values as needed */
+    border-radius: 0 8px 0 8px;
+    padding: 3px 6px;
+  }
+}
+
+.color_books {
+  .goodreads-ratings-summary {
+    font-size: 13px;
+  }
+
+  .type02_m014,  .type02_m035, .type02_m072{
+    .item {
+      .goodreads-ratings-summary {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+
+  .type02_m008 {
+    .goodreads-ratings-summary {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: rgba($color: #FFFFFF, $alpha: 0.9);
+      box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5); /* Adjust the values as needed */
+      border-radius: 0 8px 0 8px;
+      padding: 3px 6px;
+      margin-top: 0;
+    }
+  }
+}
+
+.container_24 {
+  .table_td {
+    .goodreads-ratings-summary {
+      font-size: 13px;
+      line-height: 13px;
+    }
+  }
+}

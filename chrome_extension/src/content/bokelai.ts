@@ -161,7 +161,6 @@ export const handleBookDetailPage = (document) => {
 }
 
 export const handleHomePage = document => {
-  console.log('handleHomePage executed', document.querySelectorAll('section[the_area="bk"] .item'))
   const bkSectionItemEls = document.querySelectorAll('section[the_area="bk"] .item')
 	
 	bkSectionItemEls.forEach(bkSectionItem => {
@@ -179,7 +178,7 @@ export const handleHomePage = document => {
 		let thumbnailUrl = bkSectionItem.querySelector('img').getAttribute('src')
 		
 		let prodPriceEls = bkSectionItem.querySelectorAll('.prod-price strong')
-		let price = prodPriceEls.length>0 ? prodPriceEls[prodPriceEls.length-1].textContent : null
+		let price = prodPriceEls.length>0 ? prodPriceEls[prodPriceEls.length-1].textContent.replace('$','') : null
 		let currency = 'TWD'
 		
 		let format = BookUtils.resolveIsDigital(originalBookTitle) ? 'ebook' : 'physical'

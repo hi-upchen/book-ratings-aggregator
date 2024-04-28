@@ -33,4 +33,5 @@ interface BookPostBody {
   kobo?: RetrievedGoodreadsBookInfo,
   goodreads?: RetrievedGoodreadsBookInfo,
   pchome?:RetrievedPchomeBookInfo
+  bokelai?:RetrievedPchomeBookInfo
 }

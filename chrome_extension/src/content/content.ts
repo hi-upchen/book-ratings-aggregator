@@ -23,8 +23,7 @@ import * as BookUtils from './../BookUtils.ts';
 // Kobo Site
 if (location.href.match(/www\.kobo\.com/)) {
 	if (location.href.match(/^https:\/\/www\.kobo\.com\/.*\/ebook\/.*/)) {
-		// The current URL matches the pattern
-		// console.log('The current URL is a Kobo eBook page.');
+		// kobo detail book page
 
 		let bookTitle, bookSubTitle
 		const bookTitleEl = document.querySelector('.title.product-field')

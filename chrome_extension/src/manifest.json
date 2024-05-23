@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
-	"name": "顯示書評分數 | 在 Kobo,Pchome,博客來網站顯示 Goodreads 書評分數",
-	"version": "1.2.0",
+	"name": "顯示書評分數 | 在 博客來,讀冊,Kobo,Pchome書店顯示 Goodreads 書評分數",
+	"version": "1.3.0",
 	"icons": {
 		"16": "images/book-rating.png",
 		"32": "images/book-rating.png",
@@ -21,7 +21,9 @@
 				"https://www.kobo.com/hk/zh/*",
 				"https://24h.pchome.com.tw/books/*",
 				"https://www.books.com.tw/*",
-				"https://activity.books.com.tw/*"
+				"https://activity.books.com.tw/*",
+				"https://www.taaze.tw/*",
+				"https://activity.taaze.tw/*"
 			]
 		}
 	],

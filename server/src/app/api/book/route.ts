@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  let {goodreads, kobo, pchome, bokelai}: Partial<BookPostBody> = await request.clone().json()
+  let {goodreads, kobo, pchome, bokelai, taaze}: Partial<BookPostBody> = await request.clone().json()
 
   // console.log('goodreads', goodreads)
   // console.log('kobo', kobo)
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   try {
     const client = await pool.connect();
-    let goodreadsBookId, koboBookId, pchomeBookId, bokelaiBookId
+    let goodreadsBookId, koboBookId, pchomeBookId, bokelaiBookId, taazeBookId;
 
     if (goodreads) {
       goodreadsBookId = await upsertGoodreadsBook(client, goodreads, 'goodreads_book');
@@ -36,16 +36,19 @@ export async function POST(request: Request) {
     if (bokelai) {
       bokelaiBookId = await upsertBook(client, bokelai, 'bokelai_book');
     }
+    if (taaze) {
+      taazeBookId = await upsertBook(client, taaze, 'taaze_book');
+    }
 
     client.release();
 
-    return NextResponse.json({ status: 'OK', goodreads, kobo, pchome, bokelai })
+    return NextResponse.json({ status: 'OK', goodreads, kobo, pchome, bokelai, taaze })
   } catch (error) {
     console.error('Error executing query', error);
     return NextResponse.json({ 
       error: 'Internal Server Error', 
       message: error,
-      goodreads, kobo, pchome }, { status: 500 })
+      goodreads, kobo, pchome, bokelai, taaze }, { status: 500 })
   }
 }
 

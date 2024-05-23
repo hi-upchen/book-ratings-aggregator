@@ -3,7 +3,7 @@ import {
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
 
-import * as BookUtils from '../BookUtils.ts';
+import * as BookUtils from 'utils/BookUtils';
 	
 export const renderScore2PchomeGridList = (bookItemEl, {goodreads}: {goodreads: RetrievedGoodreadsBookInfo}) => {
 	// const targetElement = document.querySelector('#RatingsBrief');

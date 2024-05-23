@@ -3,7 +3,7 @@ import {
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
 
-import * as BookUtils from './../BookUtils.ts';
+import * as BookUtils from 'utils/BookUtils';
 
 /**
  * Extracts the rating and number of ratings from the given string.

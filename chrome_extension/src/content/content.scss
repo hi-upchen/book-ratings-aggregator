@@ -260,3 +260,46 @@
     }
   }
 }
+
+// taaze styles
+@media (min-width: 1200px) {
+  .bookCaption .discPrice {
+    position: relative !important;
+    bottom: auto !important;
+  }
+}
+
+.col-sm-8.col-md-9 { // in the detail page
+  .goodreads-ratings-summary-a-wrapper {
+    margin-top: 10px;
+    display: block;
+  }
+}
+
+#avivid_history_tag .avivid_item, #avivid_other_tag .avivid_item, #avivid_recommend_tag .avivid_item{
+  .avivid_item_image {
+
+  }
+  .goodreads-ratings-summary {
+    display: flex;
+    justify-content: center;
+  }
+
+  .avivid_sale_price {
+    
+  }
+}
+
+.act_products {
+  position: relative;
+
+  .goodreads-ratings-summary {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.1);
+    padding: 2px 5px;
+    border-radius: 0 0 0 3px;
+  }
+}

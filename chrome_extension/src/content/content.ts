@@ -7,18 +7,20 @@ import {
 	renderScore2KoboSearhResultItem,
 	extractRatingAndNumRatings,
 	extractPriceAndCurrency
-} from './kobo.ts';
+} from './kobo';
 
 
 
-import * as pchome from './pchome.ts';
+import * as pchome from './pchome';
 let { renderScore2PchomeRowList,
 	renderScore2PchomeGridList,
 	renderScore2PchomeBookPage,
 	renderScore2PchomeRegionBlock4 } = pchome
 
-import * as bokelai from './bokelai.ts'
-import * as BookUtils from './../BookUtils.ts';
+import * as bokelai from './bokelai';
+import * as taaze from './taaze';
+import * as BookUtils from 'utils/BookUtils';
+import * as DomUtils from 'utils/DomUtils';
 
 // Kobo Site
 if (location.href.match(/www\.kobo\.com/)) {
@@ -654,6 +656,35 @@ if (location.href.match(/www.books.com.tw\/products.*/)) { // book detail pages
 	}
 }
 
+// 讀冊 taaze
+if (location.href.match(/www.taaze.tw\/index.html/)) { // index page
+	DomUtils.observeNodeAppearance('.bookGrid:not(.bra-processed)', () => {taaze.handleHomePage(document)})
+	DomUtils.observeNodeAppearance('.avivid_item:not(.bra-processed)', () => { taaze.handleBookDetailAvividItems(document); }); // 其他人也看了, 你剛剛看了
+} else if (location.href.match(/www.taaze.tw\/products/) || location.href.match(/www.taaze.tw\/usedList/)) { // book detail pages
+	taaze.handleBookDetailPage(document);
+	DomUtils.observeNodeAppearance('.avivid_item:not(.bra-processed)', () => { taaze.handleBookDetailAvividItems(document); }); // 其他人也看了, 你剛剛看了
+} else if (location.href.match(/www.taaze.tw\/rwd_list/)) { 
+	// sample https://www.taaze.tw/rwd_list.html?t=14&k=01&d=00
+	// sample https://www.taaze.tw/rwd_listView.html?t=14&k=01&d=00&a=00&c=030000000000&l=1
+	
+	DomUtils.observeNodeAppearance('.bookGridByListView:not(.bra-processed), .listBookGrid:not(.bra-processed)', 
+		() => { taaze.handleRWDListPage(document); });
+	DomUtils.observeNodeAppearance('.avivid_item:not(.bra-processed)', 
+		() => { taaze.handleBookDetailAvividItems(document); }); // 其他人也看了, 你剛剛看了
+
+	taaze.handleRWDListPageBestSellArea(document);
+} else if (location.href.match(/www.taaze.tw\/rwd_searchResult/)) { // 搜尋頁面
+	DomUtils.observeNodeAppearance('.info_frame:not(.bra-processed)', () => { taaze.handleSearchPage(document); });
+} else if (location.href.match(/activity.taaze.tw\/home/)) { // 活動頁面
+	// https://activity.taaze.tw/activity_y.html?masNo=1000688028&tmpName=imgUntil&_gl=1*1f4c50x*_gcl_au*MTMzNzEzNzgzNC4xNzE2MDAwNzEy*_ga*MTgyNDA0Njg3NS4xNzA2ODU3ODc4*_ga_CK2C80VFK8*MTcxNjEwMTcwMS4zLjEuMTcxNjEwNTI2Ny41NS4wLjA.
+	DomUtils.observeNodeAppearance('.act_products:not(.bra-processed)', () => { taaze.handleActivityHomePage(document); });
+	taaze.handleActivityHomePage(document)
+} else if (location.href.match(/activity.taaze.tw\/activity_y/) || location.href.match(/activity.taaze.tw\/toActivityUnitItem/) ) { // 額外的活動頁面
+	// https://activity.taaze.tw/activity_y.html?masNo=1000687646&tmpName=imgUntil
+	// https://activity.taaze.tw/toActivityUnitItem.html?unitNO=1000440965&masNo=1000687646&current_page=1&tmpName=imgUntil#bodys
+	taaze.handleActivityUnitPage(document)
+
+}
 
 function findClosestAnchorElement(element) {
 	let parentElement = element.parentElement;

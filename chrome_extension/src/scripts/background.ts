@@ -38,10 +38,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			// Handle other types of messages
 			// ...
 		} else if (message.type === 'FETCH_RATING_WITH_BOOK_TITLE') {
-			console.log('FETCH_RATING_WITH_BOOK_TITLE', message.data)
+			let book = message.data.book;
+			if ( !book) {
+				console.error('No book data found in message:', message);
+				return
+			}
 
 			// Generate the storage key
-			const storageKey = message.data.title + (message.data.subtitle ? '-' + message.data.subtitle : '');
+			const storageKey = book.title + (book.subtitle ? '-' + book.subtitle : '');
 
 			let fetchedBook = {}
 
@@ -54,24 +58,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					sendResponse(storedData);
 				} else {
 					// Fetch from Goodreads
-					console.log('Search Goodreads:', message.data);
-					let response = await fetchGoodreadsRatingbyBookName(message.data);
+					console.log('Search Goodreads:', book);
+					let response = await fetchGoodreadsRatingbyBookName(book);
 					// Save fetched data to local storage
 					const timestamp = Date.now();
 					chrome.storage.local.set({ [storageKey]: { ...response, timestamp } });
-					chrome.storage.local.set({ [message.data.title]: { ...response, timestamp } });
+					chrome.storage.local.set({ [book.title]: { ...response, timestamp } });
 
 					sendResponse(response);
 
 					// Send goodreads data to the server
-					fetchedBook = {goodreads: {...response, title: message.data.title, subtitle: message.data.subtitle}}
+					fetchedBook = {goodreads: {...response, title: book.title, subtitle: book.subtitle}}
 					sendDataToServer(fetchedBook);
 				}
 
 				// only send to pchome, kobo books to server when it's new to local
-				if ( !storedData || message.data.book?.isbn || message.data.book?.rating) {
+				if ( !storedData || book?.isbn || book?.rating) {
 					sendDataToServer({
-						[message.data.book.source]: message.data.book
+						[book.source]: book
 					});
 				}
 			});
@@ -197,7 +201,13 @@ const sendDataToServer = async (data) => {
 			body: JSON.stringify(data)
 		});
 		const responseData = await serverResponse.json();
-		console.log('sendDataToServer response:', responseData.goodreads?.title || responseData.kobo?.title ||  responseData.pchome?.title || responseData.bokelai?.title, responseData);
+		console.log('sendDataToServer response:',
+			responseData.goodreads?.title ||
+			responseData.kobo?.title ||
+			responseData.pchome?.title ||
+			responseData.bokelai?.title ||
+			responseData.taaze?.title,
+			responseData, data);
 	} catch (error) {
 		console.error('Error sending data to server:', error);
 	}

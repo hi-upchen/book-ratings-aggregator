@@ -32,6 +32,31 @@ export const resolveIsDigital = (title:string): Boolean => {
 }
 
 /**
+ * Resolve the title looks like a second hand book or not
+ * @param title The book title
+ * @returns Boolean
+ */
+export const resolveIsSecondHand = (title:string): Boolean => {
+	return title.indexOf('二手')>=0
+}
+
+/**
+ * Resolve the title looks like a physical book or not
+ * @param title The book title
+ * @returns Boolean
+ */
+export const resolveBookFormat = (title: string): String => {
+	let format = 'physical';
+	if (resolveIsDigital(title)) {
+		format = 'digital';
+	} else if (resolveIsDigital(title)) {
+		format = 'second-hand';
+	}
+
+	return format
+}
+
+/**
  * Extracts the author from the given information string.
  * @param info The information string containing author details.
  * @returns The extracted author or null if not found.
@@ -54,9 +79,9 @@ export const extractAuthorFromBookInfo = (info: string): string | null => {
 * @returns The extracted ISBN or null if not found.
 */
 export const extractISBNFromBookInfo = (info: string): string | null => {
-	const isbnRegex = /ISBN：\s*(\d+)/;
+	const isbnRegex = /ISBN\/ISSN：\s*(\d+)|ISBN：\s*(\d+)/;
 	const match = info.match(isbnRegex);
-	return match ? match[1] : null;
+	return match ? match[1] || match[2] : null;
 };
 
 
@@ -66,13 +91,13 @@ export const extractISBNFromBookInfo = (info: string): string | null => {
  * @returns The extracted price or null if not found.
  */
 export const extractPriceFromBookInfo = (info: string): string | null => {
-  const priceRegex = /(\d+)\s*元|\$(\d+)/g;
-  let match;
-  let lastMatch = null;
-  while ((match = priceRegex.exec(info)) !== null) {
-      lastMatch = match[1] || match[2]; // Check if either group 1 or group 2 matched
-  }
-  return lastMatch;
+	const priceRegex = /(\d+)\s*元|\$(\d+)|NT\$\s*(\d+)/g;
+	let match;
+	let lastMatch = null;
+	while ((match = priceRegex.exec(info)) !== null) {
+		lastMatch = match[1] || match[2] || match[3]; // Check if any of the groups matched
+	}
+	return lastMatch;
 };
 
 /**
@@ -154,4 +179,38 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement
 	ratingDiv.appendChild(numRatingsSpan);
 
 	return ratingDiv;
+}
+
+/**
+ * Generate the Rating Element with Link
+ * @param Goodreads score
+ * @returns String 
+ * @example
+ * <a href="https://www.goodreads.com/book/show/12345678" title="Book Title 4.3 avg rating — 10k ratings" target="_blank">
+ *   <div class="goodreads-ratings-summary" aria-label="Rated 4.3 out of 5 stars" translate="no">
+ *     <span class="goodreads-icon"></span>
+ *     <span class="star staticStar p10" role="presentation"></span>
+ *     <span class="bra-ratings">4.3</span>
+ *     <span class="bra-num-ratings">10k</span>
+ *   </div>
+ * </a>
+ */
+export const generateBookRatingWithLink = ({ goodreads }) : HTMLElement => {
+	// Generate the rating element without rating
+	const ratingEl = generateBookBlockRatingDiv_inNumbers({ goodreads });
+
+	// Create and append the icon element
+	const iconSpan = document.createElement('span');
+	iconSpan.classList.add('goodreads-icon');
+	ratingEl.insertAdjacentHTML('afterbegin', iconSpan.outerHTML);
+
+	// Wrap into an anchor tag
+	const ratingBriefEl = document.createElement('a');
+	ratingBriefEl.classList.add('goodreads-ratings-summary-a-wrapper');
+	ratingBriefEl.href = goodreads.url;
+	ratingBriefEl.title = `${goodreads.title} ${goodreads.rating} avg rating — ${formatNumberToKMStyle(goodreads.numRatings)} ratings`;
+	ratingBriefEl.target = "_blank";
+	ratingBriefEl.appendChild(ratingEl);
+
+	return ratingBriefEl;
 }

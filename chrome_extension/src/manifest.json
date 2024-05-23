@@ -17,8 +17,7 @@
 			"js": [ "content/content.ts" ],
 			"css" : ["content/content.scss"],
 			"matches": [
-				"https://www.kobo.com/tw/zh/*",
-				"https://www.kobo.com/hk/zh/*",
+				"https://www.kobo.com/*",
 				"https://24h.pchome.com.tw/books/*",
 				"https://www.books.com.tw/*",
 				"https://activity.books.com.tw/*",

@@ -32,6 +32,7 @@ interface RetrievedPchomeBookInfo {
 interface BookPostBody {
   kobo?: RetrievedGoodreadsBookInfo,
   goodreads?: RetrievedGoodreadsBookInfo,
-  pchome?:RetrievedPchomeBookInfo
-  bokelai?:RetrievedPchomeBookInfo
+  pchome?:RetrievedPchomeBookInfo,
+  bokelai?:RetrievedPchomeBookInfo,
+  taaze?:RetrievedPchomeBookInfo
 }

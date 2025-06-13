@@ -49,19 +49,7 @@ export const renderScore2BookPage = (bookItemEl, { goodreads }: { goodreads: Ret
   // Check if the target element exists
   if (targetElement) {
     // Insert the new element next to the target element
-    const ratingEl = BookUtils.generateBookBlockRatingDiv_inNumbers({ goodreads })
-
-    // Create and append the icon element
-    const iconSpan = document.createElement('span');
-    iconSpan.classList.add('goodreads-icon');
-    ratingEl.insertAdjacentHTML('afterbegin', iconSpan.outerHTML);
-
-    // wrap into div
-    const ratingBriefEl = document.createElement('a');
-    ratingBriefEl.href = goodreads.url;
-    ratingBriefEl.title = `${goodreads.title} ${goodreads.rating} avg rating — ${goodreads.numRatings.toLocaleString()} ratings`;
-    ratingBriefEl.target = "_blank";
-    ratingBriefEl.appendChild(ratingEl);
+    const ratingBriefEl = BookUtils.generateBookRatingWithLink({ goodreads });
 
     // targetElement.insertAdjacentHTML('afterend', ratingEl.outerHTML);
     targetElement.insertAdjacentHTML('beforeEnd', ratingBriefEl.outerHTML);

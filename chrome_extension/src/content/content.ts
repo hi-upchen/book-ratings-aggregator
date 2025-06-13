@@ -2,7 +2,6 @@ console.log('content script executed!!')
 
 import {
 	renderScore2KoboBookPage,
-	generateBookPageRatingDiv,
 	renderScore2KoboBookBlock,
 	renderScore2KoboSearhResultItem,
 	extractRatingAndNumRatings,

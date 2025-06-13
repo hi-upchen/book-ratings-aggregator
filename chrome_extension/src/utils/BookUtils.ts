@@ -134,34 +134,50 @@ export const formatNumberToKMStyle = (num: number): string => {
  ***************************/
 
 
+interface RatingConfig {
+	includeIcon?: boolean;
+	iconClass?: string;
+	containerClasses?: string[];
+}
+
 /**
  * Generate the Rating Element
- * @param Goodreads score
- * @returns String 
+ * @param goodreads Goodreads score data
+ * @param config Configuration options for the rating display
+ * @returns HTMLElement
  * @example
  * <div class="goodreads-ratings-summary" aria-label="Rated 4.3 out of 5 stars" translate="no">
+ *   <span class="goodreads-icon"></span> <!-- if includeIcon: true -->
  *   <span class="star staticStar p10" role="presentation"></span>
  *   <span class="bra-ratings">4.3</span>
  *   <span class="bra-num-ratings">10k</span>
  * </div>
  */
-export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement => {
+export const generateBookBlockRatingDiv_inNumbers = (
+	{ goodreads }, 
+	config: RatingConfig = {}
+): HTMLElement => {
+	const { includeIcon = false, iconClass = 'goodreads-icon', containerClasses = [] } = config;
 	let { rating, numRatings, url, title } = goodreads
 	
 	// Create a div element for the star rating
 	const ratingDiv = document.createElement('div');
 	ratingDiv.classList.add('goodreads-ratings-summary');
+	if (containerClasses.length > 0) {
+		ratingDiv.classList.add(...containerClasses);
+	}
 	ratingDiv.setAttribute('aria-label', `Rated ${rating} out of 5 stars`);
 	ratingDiv.setAttribute('translate', 'no');
 
-	// // Create and append the icon element
-	// const iconSpan = document.createElement('span');
-	// iconSpan.classList.add('goodreads-icon');
-	// ratingDiv.appendChild(iconSpan);
+	// Create and append the icon element if requested
+	if (includeIcon) {
+		const iconSpan = document.createElement('span');
+		iconSpan.classList.add(iconClass);
+		ratingDiv.appendChild(iconSpan);
+	}
 
-	// Add an start
+	// Add star
 	const starLi = document.createElement('span');
-	// starLi.classList.add('star', 'full');
 	starLi.classList.add('star', 'staticStar', 'p10');
 	starLi.setAttribute('role', 'presentation');
 	ratingDiv.appendChild(starLi);
@@ -169,7 +185,7 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement
 	// Add ratings
 	const totalRatingsSpan = document.createElement('span');
 	totalRatingsSpan.classList.add('bra-ratings');
-	totalRatingsSpan.textContent = rating
+	totalRatingsSpan.textContent = String(rating);
 	ratingDiv.appendChild(totalRatingsSpan);
 
 	// Add num of ratings

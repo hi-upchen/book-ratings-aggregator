@@ -13,7 +13,7 @@ export const renderScore2PchomeGridList = (bookItemEl, {goodreads}: {goodreads: 
 	// Check if the target element exists
 	if (targetElement) {
 		// Insert the new element next to the target element
-		const ratingEl = generateBookBlockRatingDiv_inNumbers({ goodreads })
+		const ratingEl = BookUtils.generateBookBlockRatingDiv_inNumbers({ goodreads })
 
 		// wrap into div
 		const ratingBriefEl = document.createElement('div');
@@ -49,42 +49,6 @@ export const renderScore2PchomeRowList = (bookItemEl, {goodreads}: {goodreads: R
 	}
 }
 
-export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }): HTMLElement => {
-	const maxRating = 5
-	let { rating, numRatings, url, title } = goodreads
-	
-	// Create a div element for the star rating
-	const ratingDiv = document.createElement('div');
-	ratingDiv.classList.add('goodreads-ratings-summary');
-	ratingDiv.setAttribute('aria-label', `Rated ${rating} out of 5 stars`);
-	ratingDiv.setAttribute('translate', 'no');
-
-	// // Create and append the icon element
-	// const iconSpan = document.createElement('span');
-	// iconSpan.classList.add('goodreads-icon');
-	// ratingDiv.appendChild(iconSpan);
-
-	// Add an start
-	const starLi = document.createElement('span');
-	// starLi.classList.add('star', 'full');
-	starLi.classList.add('star', 'staticStar', 'p10');
-	starLi.setAttribute('role', 'presentation');
-	ratingDiv.appendChild(starLi);
-
-	// Add ratings
-	const totalRatingsSpan = document.createElement('span');
-	totalRatingsSpan.classList.add('bra-ratings');
-	totalRatingsSpan.textContent = rating
-	ratingDiv.appendChild(totalRatingsSpan);
-
-	// Add num of ratings
-	const numRatingsSpan = document.createElement('span');
-	numRatingsSpan.classList.add('bra-num-ratings');
-	numRatingsSpan.textContent = BookUtils.formatNumberToKMStyle(numRatings)
-	ratingDiv.appendChild(numRatingsSpan);
-
-	return ratingDiv;
-}
 
 export const renderScore2PchomeBookPage = (bookItemEl, {goodreads}: {goodreads: RetrievedGoodreadsBookInfo}) => {
 		// const targetElement = document.querySelector('#RatingsBrief');

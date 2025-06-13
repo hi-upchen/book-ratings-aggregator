@@ -7,7 +7,7 @@ import {
   renderScore2PchomeGridList,
   renderScore2PchomeBookPage,
   renderScore2PchomeRegionBlock4 
-} from './pchome';
+} from './utils';
 
 export class PChomeHandler implements RetailerHandler {
   name = 'PChome';

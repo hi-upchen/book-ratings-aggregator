@@ -1,10 +1,10 @@
 console.log('Content script executed!');
 
 import { ContentRouter } from 'utils/ContentRouter';
-import { KoboHandler } from './KoboHandler';
-import { PChomeHandler } from './PChomeHandler';
-import { BokelaiHandler } from './BokelaiHandler';
-import { TaazeHandler } from './TaazeHandler';
+import { KoboHandler } from './retailers/kobo';
+import { PChomeHandler } from './retailers/pchome';
+import { BokelaiHandler } from './retailers/bokelai';
+import { TaazeHandler } from './retailers/taaze';
 
 // Create router instance
 const router = new ContentRouter();

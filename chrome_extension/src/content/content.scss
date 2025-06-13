@@ -269,11 +269,14 @@
   }
 }
 
+a.goodreads-ratings-summary-a-wrapper {
+  text-decoration: none !important;
+}
+
 .col-sm-8.col-md-9 { // in the detail page
   .goodreads-ratings-summary-a-wrapper {
     margin-top: 10px;
     display: block;
-    text-decoration: none;
   }
 }
 

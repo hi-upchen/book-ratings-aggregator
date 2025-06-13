@@ -8,7 +8,7 @@ import {
   renderScore2KoboSearhResultItem,
   extractRatingAndNumRatings,
   extractPriceAndCurrency
-} from './kobo';
+} from './utils';
 
 export class KoboHandler implements RetailerHandler {
   name = 'Kobo';

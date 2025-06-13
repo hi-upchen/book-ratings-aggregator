@@ -1,6 +1,6 @@
 import { RetailerHandler } from 'utils/ContentRouter';
 import { observeNodeAppearance } from 'utils/DomUtils';
-import * as taaze from './taaze';
+import * as taaze from './utils';
 
 export class TaazeHandler implements RetailerHandler {
   name = 'Taaze (讀冊)';

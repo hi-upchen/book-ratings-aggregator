@@ -4,7 +4,29 @@ import {
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
 
 import * as BookUtils from 'utils/BookUtils';
+
+export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }: {goodreads: RetrievedGoodreadsBookInfo}): HTMLElement => {
+	let { rating, numRatings, url, title } = goodreads
 	
+	// Create rating wrapper
+	const ratingWrapper = document.createElement('div');
+	ratingWrapper.classList.add('goodreads-ratings-summary');
+	
+	// Create rating text
+	const ratingText = document.createElement('span');
+	ratingText.classList.add('rating-text');
+	ratingText.textContent = `${rating.toFixed(1)} (${numRatings.toLocaleString()})`;
+	
+	// Create icon
+	const iconSpan = document.createElement('span');
+	iconSpan.classList.add('goodreads-icon');
+	
+	ratingWrapper.appendChild(iconSpan);
+	ratingWrapper.appendChild(ratingText);
+	
+	return ratingWrapper;
+}
+		
 export const renderScore2PchomeGridList = (bookItemEl, {goodreads}: {goodreads: RetrievedGoodreadsBookInfo}) => {
 	// const targetElement = document.querySelector('#RatingsBrief');
 	// console.log('bookItemEl', bookItemEl)

@@ -32,9 +32,9 @@ export const extractRatingAndNumRatings = (ratingString: string): { rating: numb
  * @param subtext The subtext containing the price and currency.
  * @returns An object containing the extracted price and currency.
  */
-export const extractPriceAndCurrency = (subtext: string): { price: Number, currency: string } => {
+export const extractPriceAndCurrency = (subtext: string): { price: number | null, currency: string | null } => {
 	if (!subtext) {
-		return {price:null, currency:null}
+		return {price: null, currency: null}
 	}
 
 	// Use regular expressions to extract the price and currency

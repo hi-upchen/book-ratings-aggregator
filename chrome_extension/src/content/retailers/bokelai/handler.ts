@@ -1,6 +1,6 @@
 import { RetailerHandler } from 'utils/ContentRouter';
 import { observeNodeAppearance } from 'utils/DomUtils';
-import * as bokelai from './bokelai';
+import * as bokelai from './utils';
 
 export class BokelaiHandler implements RetailerHandler {
   name = 'Bokelai (博客來)';

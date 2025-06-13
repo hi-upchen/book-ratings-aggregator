@@ -307,3 +307,41 @@ a.goodreads-ratings-summary-a-wrapper {
     border-radius: 0 0 0 3px;
   }
 }
+
+// Kobo homepage styles
+.kobo-homepage-rating {
+  margin-top: 5px;
+  font-size: 12px;
+  
+  .goodreads-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 3px;
+  }
+  
+  .staticStar {
+    margin-right: 1px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .bra-ratings {
+    font-size: 12px;
+  }
+  
+  .bra-num-ratings {
+    font-size: 11px;
+    
+    &::before {
+      padding: 0.2rem;
+      content: "·";
+    }
+  }
+}
+
+// Kobo carousel container adjustments
+.carousel-body-container .kobo-homepage-rating {
+  display: flex;
+  justify-content: center;
+  margin-top: 3px;
+}

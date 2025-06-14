@@ -2,21 +2,28 @@ import { RetailerHandler } from 'utils/ContentRouter';
 import { ChromeMessagingService, BookData } from 'utils/ChromeMessagingService';
 import { getCurrentPageRootUrl, findClosestAnchorElement } from 'utils/DomUtils';
 import * as BookUtils from 'utils/BookUtils';
-import { 
-  renderScore2KoboBookPage,
-  renderScore2KoboBookBlock,
-  renderScore2KoboSearhResultItem,
-  extractRatingAndNumRatings,
-  extractPriceAndCurrency
-} from './utils';
 
+/**
+ * Kobo e-commerce retailer handler for processing book pages and injecting Goodreads ratings.
+ * Supports book detail pages, homepage carousels, search results, and recommendation lists.
+ */
 export class KoboHandler implements RetailerHandler {
   name = 'Kobo';
 
+  /**
+   * Determines if this handler should process the given URL.
+   * @param url - The URL to check
+   * @returns True if the URL is a Kobo website
+   */
   matches(url: string): boolean {
     return /www\.kobo\.com/.test(url);
   }
 
+  /**
+   * Main entry point for processing Kobo pages.
+   * Routes to appropriate handler based on URL pattern.
+   * @param document - The document to process
+   */
   handle(document: Document): void {
     console.log('KoboHandler: Handling page', location.href);
     
@@ -25,15 +32,15 @@ export class KoboHandler implements RetailerHandler {
     
     if (/^https:\/\/www\.kobo\.com\/.*\/ebook\/.*/.test(location.href)) {
       this.handleBookDetailPage();
-    } else if (/^https:\/\/www\.kobo\.com\/[a-z]{2}\/[a-z]{2}.*/.test(location.href)) {
-      // Homepage pattern like https://www.kobo.com/tw/zh
-      this.handleHomePage();
     } else {
-      this.handleHomePage();
-      // this.handleBookListPages();
+      this.handleHomeAndListingPage();
     }
   }
 
+  /**
+   * Handles individual book detail pages.
+   * Processes the main book information and any recommendation lists on the page.
+   */
   private handleBookDetailPage(): void {
     console.log('handleBookDetailPage');
     
@@ -47,6 +54,10 @@ export class KoboHandler implements RetailerHandler {
     this.startBookListObserver();
   }
 
+  /**
+   * Extracts book information from a detail page and fetches Goodreads rating.
+   * Handles title, subtitle, and author extraction with fallback selectors.
+   */
   private processDetailPageBook(): void {
     // Find the main book container - detail pages have one main book section
     const bookContainer = document.querySelector('.sidebar-group') || document.body;
@@ -111,6 +122,11 @@ export class KoboHandler implements RetailerHandler {
     }
   }
 
+  /**
+   * Renders the Goodreads rating on a book detail page.
+   * @param bookContainer - The container element for the book
+   * @param goodreads - The Goodreads rating data
+   */
   private renderDetailPageBookRating(bookContainer: Element, goodreads: any): void {
     // Find the best insertion point using multiple selectors
     const insertionSelectors = [
@@ -139,7 +155,11 @@ export class KoboHandler implements RetailerHandler {
     }
   }
 
-  private handleHomePage(): void {
+  /**
+   * Handles homepage, search results, and listing pages.
+   * Processes existing book lists and sets up dynamic content monitoring.
+   */
+  private handleHomeAndListingPage(): void {
     // Process any books that are already loaded
     this.processBookLists();
     
@@ -147,6 +167,10 @@ export class KoboHandler implements RetailerHandler {
     this.startBookListObserver();
   }
 
+  /**
+   * Processes all book lists on the current page.
+   * Uses Set-based deduplication to prevent processing the same container multiple times.
+   */
   private processBookLists(): void {
     // Find all ebook links
     const bookLinks = document.querySelectorAll('a[href*="/ebook/"]');
@@ -167,6 +191,10 @@ export class KoboHandler implements RetailerHandler {
     });
   }
 
+  /**
+   * Sets up a MutationObserver to monitor for dynamically loaded book content.
+   * Automatically processes new books as they appear and stops after 30 seconds.
+   */
   private startBookListObserver(): void {
     // Use MutationObserver to watch for dynamically loaded book lists
     const observer = new MutationObserver((mutations) => {
@@ -194,6 +222,11 @@ export class KoboHandler implements RetailerHandler {
     }, 30000);
   }
 
+  /**
+   * Processes an individual book item from a list or carousel.
+   * Extracts book metadata and fetches Goodreads rating if available.
+   * @param bookEl - The DOM element containing the book information
+   */
   private processBookListItem(bookEl: Element): void {
     // Skip if already processed
     if (bookEl.classList.contains('bra-processed')) {
@@ -254,6 +287,12 @@ export class KoboHandler implements RetailerHandler {
     }
   }
 
+  /**
+   * Renders the Goodreads rating for a book list item.
+   * Finds the optimal insertion point based on existing Kobo elements.
+   * @param bookEl - The book container element
+   * @param goodreads - The Goodreads rating data
+   */
   private renderBookListItemRating(bookEl: Element, goodreads: any): void {
     // Find the best place to insert the rating
     let targetElement: Element | null = null;

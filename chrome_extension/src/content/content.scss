@@ -144,6 +144,7 @@
   .book-details {
     .bra-rating-wrapper {
       margin-top: 3px;
+
       .bra-rating-link-wrapper {
         .bra-rating-content {
           font-size: 12px;
@@ -153,47 +154,36 @@
   }
 
 
-  // Kobo search results
+  // Kobo search results, https://www.kobo.com/tw/zh/list/tw-lp-tw-kobo-crown2025-widget-1/p-Q81loeSsoDvQjdk30_lA
   .result-items {
-    .bra-rating-content {
-      .bra-star {
-        margin-right: 3px;
+    .bra-rating-wrapper {
+      margin-top: 3px;
+
+      .bra-rating-link-wrapper {
+        .bra-rating-content {
+          font-size: 12px;
+        }
       }
     }
   }
 
-  // // Kobo carousel
-  // .carousel-body-container {
-  //   .bra-rating-content {
-  //     display: inline-flex;
-  //     text-decoration: none;
+  // Kobo book detail page, eg https://www.kobo.com/tw/zh/ebook/PndeqGpqQTiMUSKARJBpag
+  .primary-left-container {
+    .bra-rating-wrapper {
+      margin-top: 3px;
 
-  //     .bra-goodreads-icon {
-  //     }
+      .bra-rating-link-wrapper {
+        .bra-rating-content {
+          font-size: 14px;
 
-  //     .bra-star {
-  //     }
-
-  //     .bra-rating-score {
-  //     }
-
-  //     .bra-rating-count {
-
-  //       &::before {
-  //         padding: 0.4rem;
-  //         content: "\B7";
-  //       }
-  //     }
-  //   }
-  // }
-
-  // // Kobo book details
-  // .book-details {
-  //   .bra-rating-content {
-  //     justify-content: center;
-  //   }
-  // }
-
+          .bra-goodreads-icon {
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+    }
+  }
 }
 
 // =========================================

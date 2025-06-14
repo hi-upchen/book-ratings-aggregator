@@ -3,9 +3,11 @@
 // =========================================
 
 .bra-rating-wrapper {
-  .bra-rating-link-wrapper {
+  a {
     text-decoration: none !important;
+  }
 
+  .bra-rating-link-wrapper {
     .bra-rating-content {
       flex-direction: row;
       align-items: center;
@@ -144,6 +146,7 @@
       margin-top: 3px;
       .bra-rating-link-wrapper {
         .bra-rating-content {
+          font-size: 12px;
         }
       }
     }
@@ -159,43 +162,37 @@
     }
   }
 
-  // Kobo carousel
-  .carousel-body-container {
-    .bra-rating-content {
-      display: inline-flex;
-      text-decoration: none;
+  // // Kobo carousel
+  // .carousel-body-container {
+  //   .bra-rating-content {
+  //     display: inline-flex;
+  //     text-decoration: none;
 
-      .bra-goodreads-icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 0.4rem;
-      }
+  //     .bra-goodreads-icon {
+  //     }
 
-      .bra-star {
-        margin-right: 2px;
-      }
+  //     .bra-star {
+  //     }
 
-      .bra-rating-score {
-        font-size: 90%;
-      }
+  //     .bra-rating-score {
+  //     }
 
-      .bra-rating-count {
-        font-size: 90%;
+  //     .bra-rating-count {
 
-        &::before {
-          padding: 0.4rem;
-          content: "\B7";
-        }
-      }
-    }
-  }
+  //       &::before {
+  //         padding: 0.4rem;
+  //         content: "\B7";
+  //       }
+  //     }
+  //   }
+  // }
 
-  // Kobo book details
-  .book-details {
-    .bra-rating-content {
-      justify-content: center;
-    }
-  }
+  // // Kobo book details
+  // .book-details {
+  //   .bra-rating-content {
+  //     justify-content: center;
+  //   }
+  // }
 
 }
 

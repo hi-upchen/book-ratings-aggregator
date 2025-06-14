@@ -162,7 +162,7 @@ export const generateBookBlockRatingDiv_inNumbers = (
 	
 	// Create a div element for the star rating
 	const ratingDiv = document.createElement('div');
-	ratingDiv.classList.add('goodreads-ratings-summary');
+	ratingDiv.classList.add('bra-rating-content');
 	if (containerClasses.length > 0) {
 		ratingDiv.classList.add(...containerClasses);
 	}
@@ -172,25 +172,25 @@ export const generateBookBlockRatingDiv_inNumbers = (
 	// Create and append the icon element if requested
 	if (includeIcon) {
 		const iconSpan = document.createElement('span');
-		iconSpan.classList.add(iconClass);
+		iconSpan.classList.add('bra-goodreads-icon');
 		ratingDiv.appendChild(iconSpan);
 	}
 
 	// Add star
 	const starLi = document.createElement('span');
-	starLi.classList.add('star', 'staticStar', 'p10');
+	starLi.classList.add('bra-star-interactive', 'bra-star', 'p10');
 	starLi.setAttribute('role', 'presentation');
 	ratingDiv.appendChild(starLi);
 
 	// Add ratings
 	const totalRatingsSpan = document.createElement('span');
-	totalRatingsSpan.classList.add('bra-ratings');
+	totalRatingsSpan.classList.add('bra-rating-score');
 	totalRatingsSpan.textContent = String(rating);
 	ratingDiv.appendChild(totalRatingsSpan);
 
 	// Add num of ratings
 	const numRatingsSpan = document.createElement('span');
-	numRatingsSpan.classList.add('bra-num-ratings');
+	numRatingsSpan.classList.add('bra-rating-count');
 	numRatingsSpan.textContent = formatNumberToKMStyle(numRatings)
 	ratingDiv.appendChild(numRatingsSpan);
 
@@ -217,12 +217,12 @@ export const generateBookRatingWithLink = ({ goodreads }) : HTMLElement => {
 
 	// Create and append the icon element
 	const iconSpan = document.createElement('span');
-	iconSpan.classList.add('goodreads-icon');
+	iconSpan.classList.add('bra-goodreads-icon');
 	ratingEl.insertAdjacentHTML('afterbegin', iconSpan.outerHTML);
 
 	// Wrap into an anchor tag
 	const ratingBriefEl = document.createElement('a');
-	ratingBriefEl.classList.add('goodreads-ratings-summary-a-wrapper');
+	ratingBriefEl.classList.add('bra-rating-link-wrapper');
 	ratingBriefEl.href = goodreads.url;
 	ratingBriefEl.title = `${goodreads.title} ${goodreads.rating} avg rating — ${formatNumberToKMStyle(goodreads.numRatings)} ratings`;
 	ratingBriefEl.target = "_blank";

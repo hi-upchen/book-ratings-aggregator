@@ -17,6 +17,9 @@ export class PChomeHandler implements RetailerHandler {
   }
 
   handle(document: Document): void {
+    // Add retailer theme class
+    document.documentElement.classList.add('bra-retailer-pchome');
+    
     if (/24h\.pchome\.com\.tw\/books\/prod.*/.test(location.href)) {
       this.handleBookDetailPage();
     } else if (/pchome\.com\.tw\/books\/store.*/.test(location.href)) {

@@ -10,6 +10,9 @@ export class BokelaiHandler implements RetailerHandler {
   }
 
   handle(document: Document): void {
+    // Add retailer theme class
+    document.documentElement.classList.add('bra-retailer-bokelai');
+    
     if (/www\.books\.com\.tw\/products.*/.test(location.href)) {
       // book detail pages
       bokelai.handleBookDetailPage(document);

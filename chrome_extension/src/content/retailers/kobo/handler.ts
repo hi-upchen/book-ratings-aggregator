@@ -19,6 +19,10 @@ export class KoboHandler implements RetailerHandler {
 
   handle(document: Document): void {
     console.log('KoboHandler: Handling page', location.href);
+    
+    // Add retailer theme class
+    document.documentElement.classList.add('bra-retailer-kobo');
+    
     if (/^https:\/\/www\.kobo\.com\/.*\/ebook\/.*/.test(location.href)) {
       this.handleBookDetailPage();
     } else if (/^https:\/\/www\.kobo\.com\/[a-z]{2}\/[a-z]{2}.*/.test(location.href)) {
@@ -271,9 +275,8 @@ export class KoboHandler implements RetailerHandler {
   }
 
   private processHomepageBookItem(bookEl: Element): void {
-    // Skip if already processed or if rating already exists
-    if (bookEl.classList.contains('bra-processed') || 
-        bookEl.querySelector('.kobo-homepage-rating')) {
+    // Skip if already processed
+    if (bookEl.classList.contains('bra-processed')) {
       return;
     }
     
@@ -344,8 +347,21 @@ export class KoboHandler implements RetailerHandler {
     ];
 
     for (const selector of insertionSelectors) {
-      targetElement = bookEl.querySelector(selector);
-      if (targetElement) break;
+      const foundElement = bookEl.querySelector(selector);
+      if (foundElement) {
+        // Special handling for div.kobo.star-rating - find its parent div.book-detail-line
+        if (selector === 'div.kobo.star-rating') {
+          const parentDetailLine = foundElement.closest('div.book-detail-line');
+          if (parentDetailLine) {
+            targetElement = parentDetailLine;
+          } else {
+            targetElement = foundElement;
+          }
+        } else {
+          targetElement = foundElement;
+        }
+        break;
+      }
     }
 
     if (targetElement) {
@@ -354,11 +370,12 @@ export class KoboHandler implements RetailerHandler {
       
       // Wrap in container with appropriate classes
       const ratingContainer = document.createElement('div');
-      ratingContainer.classList.add('goodreads-ratings-summary', 'kobo-homepage-rating');
+      ratingContainer.classList.add('bra-rating-wrapper');
       ratingContainer.appendChild(ratingEl);
 
-      // Insert the rating
+      // Insert the rating directly
       targetElement.insertAdjacentElement('afterend', ratingContainer);
+
 
       console.log('Inserted homepage book rating for:', goodreads.title, targetElement);
     } else {

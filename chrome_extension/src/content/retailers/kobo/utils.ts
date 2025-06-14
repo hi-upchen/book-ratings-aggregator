@@ -122,7 +122,7 @@ export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }: {goodreads: 
 	
 	// Create a div element for the star rating
 	const ratingDiv = document.createElement('div');
-	ratingDiv.classList.add('kobo', 'star-rating', 'goodreads-ratings-summary');
+	ratingDiv.classList.add('kobo', 'star-rating', 'bra-rating-content');
 	ratingDiv.setAttribute('role', 'img');
 	ratingDiv.setAttribute('aria-label', `Rated ${rating} out of 5 stars`);
 	ratingDiv.setAttribute('translate', 'no');
@@ -135,7 +135,7 @@ export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }: {goodreads: 
 	for (let i = 0; i < fullStars; i++) {
 		const starLi = document.createElement('span');
 		// starLi.classList.add('star', 'full');
-		starLi.classList.add('star', 'staticStar', 'p10');
+		starLi.classList.add('bra-star-interactive', 'bra-star', 'p10');
 		starLi.setAttribute('role', 'presentation');
 		ratingDiv.appendChild(starLi);
 	}
@@ -143,7 +143,7 @@ export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }: {goodreads: 
 	// Create half star li element if applicable
 	if (hasHalfStar) {
 		const halfStarLi = document.createElement('span');
-		halfStarLi.classList.add('star', 'staticStar');
+		halfStarLi.classList.add('bra-star-interactive', 'bra-star');
 		// halfStarLi.classList.add('star', 'half');
 		const roundedHalfStar = (rating % 1) * 10;
 		// Round the half star value to the nearest multiple of 3 or 10
@@ -157,14 +157,14 @@ export const generateBookBlockRatingDiv_AllStarts = ({ goodreads }: {goodreads: 
 	// Create empty star li elements
 	for (let i = fullStars + (hasHalfStar ? 1 : 0); i < maxRating; i++) {
 		const starLi = document.createElement('span');
-		starLi.classList.add('star', 'staticStar', 'p0');
+		starLi.classList.add('bra-star-interactive', 'bra-star', 'p0');
 		starLi.setAttribute('role', 'presentation');
 		ratingDiv.appendChild(starLi);
 	}
 
 	// Create and append the icon element
 	const iconSpan = document.createElement('span');
-	iconSpan.classList.add('goodreads-icon');
+	iconSpan.classList.add('bra-goodreads-icon');
 	ratingDiv.appendChild(iconSpan);
 
 	return ratingDiv;

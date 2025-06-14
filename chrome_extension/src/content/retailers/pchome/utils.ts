@@ -10,7 +10,7 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }: {goodreads: 
 	
 	// Create rating wrapper
 	const ratingWrapper = document.createElement('div');
-	ratingWrapper.classList.add('goodreads-ratings-summary');
+	ratingWrapper.classList.add('bra-rating-content');
 	
 	// Create rating text
 	const ratingText = document.createElement('span');
@@ -19,7 +19,7 @@ export const generateBookBlockRatingDiv_inNumbers = ({ goodreads }: {goodreads: 
 	
 	// Create icon
 	const iconSpan = document.createElement('span');
-	iconSpan.classList.add('goodreads-icon');
+	iconSpan.classList.add('bra-goodreads-icon');
 	
 	ratingWrapper.appendChild(iconSpan);
 	ratingWrapper.appendChild(ratingText);

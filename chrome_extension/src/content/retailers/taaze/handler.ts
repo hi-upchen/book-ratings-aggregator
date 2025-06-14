@@ -10,6 +10,9 @@ export class TaazeHandler implements RetailerHandler {
   }
 
   handle(document: Document): void {
+    // Add retailer theme class
+    document.documentElement.classList.add('bra-retailer-taaze');
+    
     if (/www\.taaze\.tw\/index\.html/.test(location.href)) {
       // index page
       this.handleIndexPage(document);

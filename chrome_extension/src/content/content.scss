@@ -1,3 +1,7 @@
+// .bra-processed {
+//   background-color: gainsboro;
+// }
+
 // =========================================
 // 1. BASE RATING COMPONENT STYLES
 // =========================================
@@ -27,8 +31,8 @@
       // Star components
       .bra-star {
         margin-right: 2px;
-        width: 17px;
-        height: 17px;
+        width: 15px;
+        height: 15px;
         display: inline-block;
         background-repeat: no-repeat;
 
@@ -190,58 +194,42 @@
 // 3. PCHOME RETAILER STYLES
 // =========================================
 
-.ecsite-layout.style_book {
-  dl#ProdGridContainer {
-    dd {
-      height: 211px;
-    }
-  }
+.bra-retailer-pchome {
 
-  .bra-rating-content {
-    .bra-star {
-      margin-right: 0;
-    }
-
-    .bra-rating-count {
-      &::before {
-        padding: 0.2rem;
-      }
-    }
-  }
-
-  #ProdListContainer {
-    .bra-rating-score {
-      color: #999;
-    }
-
-    .bra-rating-count {
-      color: #999;
-    }
-  }
-
-  #DescrbContainer {
+  .bra-rating-link-wrapper {
     .bra-rating-content {
-      margin-top: 10px;
-    }
-  }
+      // font-family: "Noto Sans TC", sans-serif;
+      font-size: 12px;
 
-  #Block4Container {
-    dd {
-      .bra-rating-content {
-        justify-content: center;
+      // Icon component
+      .bra-goodreads-icon {
+        // background-color: darkkhaki;
       }
 
-      &.mL {
-        .bra-rating-content {
-          justify-content: left;
+      .bra-star-interactive {
+        // background-color: cadetblue;
+        margin-right: 3px;
+      }
+
+      // Rating text
+      .bra-rating-score {
+        font-weight: bold;
+      }
+
+      .bra-rating-count {
+        font-weight: bold;
+
+        &::before {
+          padding: 0 0 0 3px;
+          content: "(";
+        }
+
+        &::after {
+          padding: 0 0px;
+          content: ")";
         }
       }
     }
-  }
-
-  #newarrival,
-  #salesrank {
-    font-size: 90%;
   }
 }
 

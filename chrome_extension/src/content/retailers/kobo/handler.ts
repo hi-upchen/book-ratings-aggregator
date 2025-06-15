@@ -41,9 +41,7 @@ export class KoboHandler implements RetailerHandler {
    * Handles individual book detail pages.
    * Processes the main book information and any recommendation lists on the page.
    */
-  private handleBookDetailPage(): void {
-    console.log('handleBookDetailPage');
-    
+  private handleBookDetailPage(): void {    
     // Process the main book detail first
     this.processDetailPageBook();
     

@@ -387,11 +387,15 @@ export class PChomeHandler implements RetailerHandler {
    * @param goodreads - The Goodreads rating data
    */
   private renderDetailPageBookRating(bookContainer: Element, goodreads: any): void {
-    const targetElement = bookContainer.querySelector('#SloganContainer');
+    const targetElement = document.querySelector('.c-blockCombine--priceGray');
     
     if (targetElement) {
       const ratingEl = BookUtils.generateBookRatingWithLink({ goodreads });
-      targetElement.insertAdjacentHTML('afterend', ratingEl.outerHTML);
+      const ratingContainer = document.createElement('div');
+      ratingContainer.classList.add('bra-rating-wrapper');
+      ratingContainer.appendChild(ratingEl);
+      
+      targetElement.insertAdjacentElement('beforebegin', ratingContainer);
     } else {
       console.warn('No suitable insertion point found for detail page book rating');
     }

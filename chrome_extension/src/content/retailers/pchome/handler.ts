@@ -26,10 +26,10 @@ export class PChomeHandler implements RetailerHandler {
    */
   handle(document: Document): void {
     console.log('PChomeHandler: Handling page', location.href);
-    
+
     // Add retailer theme class
     document.body.classList.add('bra-retailer-pchome');
-    
+
     if (/24h\.pchome\.com\.tw\/books\/prod.*/.test(location.href)) {
       this.handleBookDetailPage();
     } else {
@@ -41,34 +41,37 @@ export class PChomeHandler implements RetailerHandler {
    * Handles individual book detail pages.
    * Processes the main book information and fetches Goodreads rating.
    */
-  private handleBookDetailPage(): void {    
+  private handleBookDetailPage(): void {
     console.log('handleBookDetailPage')
 
-    // setTimeout(() => {
-      const bookContainer = document.querySelector('#ProdBriefing');
+    const bookContainer = document.querySelector('#ProdBriefing');
 
-      if (!bookContainer || bookContainer.classList.contains('bra-processed')) {
-        return;
+    if (!bookContainer || bookContainer.classList.contains('bra-processed')) {
+      return;
+    }
+
+    // Mark as processed to prevent duplicates
+    bookContainer.classList.add('bra-processed');
+    const bookData = this.extractBookData(bookContainer as HTMLElement);
+
+    console.log('PChomeHandler: Extracted book data', bookData);
+
+    if (!bookData) {
+      console.error('PChomeHandler: Unable to extract book data from detail page');
+      return;
+    }
+
+    ChromeMessagingService.fetchRatingWithCallback(bookData, (response) => {
+      if (response.found) {
+        this.renderDetailPageBookRating(bookContainer, response);
       }
+    });
 
-      // Mark as processed to prevent duplicates
-      bookContainer.classList.add('bra-processed');
-      console.log('bookContainer', bookContainer)
-      const bookData = this.extractBookData(bookContainer as HTMLElement);
-
-      console.log('PChomeHandler: Extracted book data', bookData);
-
-      if (!bookData) {
-        console.error('PChomeHandler: Unable to extract book data from detail page');
-        return;
-      }
-
-      ChromeMessagingService.fetchRatingWithCallback(bookData, (response) => {
-        if (response.found) {
-          this.renderDetailPageBookRating(bookContainer, response);
-        }
-      });
-    // }, 100);
+    // Also process any lazy-loaded book listings on the detail page
+    this.processBookLists();
+    
+    // Set up observer for dynamically loaded book lists
+    this.startBookListObserver();
   }
 
   /**
@@ -78,7 +81,7 @@ export class PChomeHandler implements RetailerHandler {
   private handleListingPages(): void {
     // Process any books that are already loaded
     this.processBookLists();
-    
+
     // Set up observer for dynamically loaded content
     this.startBookListObserver();
   }
@@ -92,19 +95,19 @@ export class PChomeHandler implements RetailerHandler {
     if (!document.body.classList.contains('bra-retailer-pchome')) {
       document.body.classList.add('bra-retailer-pchome');
     }
-    
+
     // Find all PChome book links using generic pattern
     const bookLinks = document.querySelectorAll('a[href*="/prod/"]');
-    
+
     // Collect unique containers using Set
     const uniqueContainers = new Set<Element>();
-    
+
     bookLinks.forEach((linkEl: Element) => {
       const href = linkEl.getAttribute('href') || '';
-      const bookContainer = linkEl.closest('.swiper-slide') || 
-                           linkEl.closest('.c-listInfoGrid__item') ||
-                           linkEl.parentElement;
-      
+      const bookContainer = linkEl.closest('.swiper-slide') ||
+        linkEl.closest('.c-listInfoGrid__item') ||
+        linkEl.parentElement;
+
       // Determine if link should be processed
       let shouldInclude = false;
       if (href.includes('/books/prod/')) {
@@ -112,15 +115,15 @@ export class PChomeHandler implements RetailerHandler {
       } else if (href.includes('/prod/')) {
         shouldInclude = bookContainer?.textContent?.includes('電子書') || false;
       }
-      
+
       if (!shouldInclude) return;
-      
+
       // Add container to set if not already processed
       if (bookContainer && !bookContainer.classList.contains('bra-processed')) {
         uniqueContainers.add(bookContainer);
       }
     });
-    
+
     // Process each unique container once
     uniqueContainers.forEach(container => {
       this.processBookListItem(container);
@@ -152,10 +155,10 @@ export class PChomeHandler implements RetailerHandler {
       this.processBookLists();
     }, 100);
 
-    // Stop observing after 30 seconds
-    setTimeout(() => {
-      observer.disconnect();
-    }, 30000);
+    // // Stop observing after 30 seconds
+    // setTimeout(() => {
+    //   observer.disconnect();
+    // }, 60*1000);
   }
 
   /**
@@ -168,7 +171,7 @@ export class PChomeHandler implements RetailerHandler {
     if (bookEl.classList.contains('bra-processed')) {
       return;
     }
-    
+
     // Mark as processed at the start to prevent duplicates
     bookEl.classList.add('bra-processed');
 
@@ -198,7 +201,7 @@ export class PChomeHandler implements RetailerHandler {
     let isbn: string | null = null;
     let thumbnailUrl: string | undefined = undefined;
     let price: number | undefined = undefined;
-    
+
     // Try multiple selectors for title
     const titleSelectors = ['.c-prodInfoV2__title', 'h1'];
     for (const selector of titleSelectors) {
@@ -209,7 +212,7 @@ export class PChomeHandler implements RetailerHandler {
         break;
       }
     }
-    
+
     // // Try multiple selectors for author and ISBN
     // const metadataSelectors = ['.msg_box'];
     // for (const selector of metadataSelectors) {
@@ -220,7 +223,7 @@ export class PChomeHandler implements RetailerHandler {
     //     isbn = isbn || BookUtils.extractISBNFromBookInfo(text);
     //   }
     // }
-    
+
     // Try multiple selectors for thumbnail
     const thumbnailSelectors = ['.c-prodInfoV2__img img', '.swiper-wrapper img', 'img'];
     for (const selector of thumbnailSelectors) {
@@ -230,9 +233,14 @@ export class PChomeHandler implements RetailerHandler {
         break;
       }
     }
-    
-    // Try multiple selectors for price
-    const priceSelectors = ['.c-prodInfoV2__priceBar .c-prodInfoV2__priceValue', '.c-prodInfoV2__priceBar .o-prodPrice__price', '.o-prodPrice__price'];
+
+    // Try multiple selectors for price (prioritize --m variant)
+    const priceSelectors = [
+      '.c-prodInfoV2__priceValue--m',
+      '.c-prodInfoV2__priceBar .c-prodInfoV2__priceValue',
+      '.c-prodInfoV2__priceBar .o-prodPrice__price',
+      '.o-prodPrice__price'
+    ];
     for (const selector of priceSelectors) {
       const priceEls = bookContainer.querySelectorAll(selector);
       if (priceEls.length > 0) {
@@ -241,7 +249,7 @@ export class PChomeHandler implements RetailerHandler {
         break;
       }
     }
-    
+
     // Extract URL
     const linkEl = bookContainer.querySelector('a[href*="/prod/"]');
     if (linkEl) {
@@ -252,11 +260,11 @@ export class PChomeHandler implements RetailerHandler {
     } else {
       bookUrl = '';
     }
-    
+
     if (!bookTitle) return null;
-    
-    
-    
+
+
+
     return {
       source: 'pchome',
       title: bookTitle,
@@ -269,7 +277,7 @@ export class PChomeHandler implements RetailerHandler {
       isbn: isbn || undefined
     };
   }
-  
+
   /**
    * Extracts book data from a detail page container.
    * @param bookContainer - The detail page book container
@@ -279,18 +287,18 @@ export class PChomeHandler implements RetailerHandler {
     // Implementation for detail page extraction
     const titleEl = document.querySelector('#DescrbContainer .prod_name');
     const bookTitle = titleEl?.textContent?.trim();
-    
+
     if (!bookTitle) {
       return null;
     }
-    
+
     const cleanTitle = BookUtils.cleanBookTitle(bookTitle);
-    
+
     // Extract other metadata similar to list items
     const { author, isbn } = this.extractMetadataFromContainer(bookContainer as HTMLElement);
     const thumbnailUrl = this.extractThumbnailFromContainer(bookContainer as HTMLElement);
     const { price, currency } = this.extractPriceFromContainer(bookContainer as HTMLElement);
-    
+
     return {
       source: 'pchome',
       title: cleanTitle,
@@ -311,12 +319,12 @@ export class PChomeHandler implements RetailerHandler {
    */
   private extractTitleFromElement(titleElement: HTMLElement): string | null {
     if (!titleElement) return null;
-    
+
     // Handle simple case first
     if (titleElement.childNodes.length === 1) {
       return titleElement.textContent?.trim() || null;
     }
-    
+
     // Handle complex case (region pages) - iterate through child nodes
     let bookTitle = '';
     titleElement.childNodes.forEach(node => {
@@ -324,16 +332,16 @@ export class PChomeHandler implements RetailerHandler {
         bookTitle += node.textContent;
       }
     });
-    
+
     // Fallback to last text node (grid/row pages)
     if (!bookTitle && titleElement.childNodes.length) {
       const lastNode = titleElement.childNodes[titleElement.childNodes.length - 1] as Text;
       bookTitle = lastNode.textContent || '';
     }
-    
+
     return bookTitle.trim() || null;
   }
-  
+
   /**
    * Extracts author and ISBN metadata from book container.
    * @param bookContainer - The book container element
@@ -342,17 +350,17 @@ export class PChomeHandler implements RetailerHandler {
   private extractMetadataFromContainer(bookContainer: HTMLElement): { author?: string, isbn?: string } {
     const bookInfoEl = bookContainer.querySelector('.msg_box');
     let author: string | undefined, isbn: string | undefined;
-    
+
     if (bookInfoEl) {
       Array.from(bookInfoEl.children).forEach((child: HTMLElement) => {
         author = BookUtils.extractAuthorFromBookInfo(child.textContent?.trim() || '') ?? author;
         isbn = BookUtils.extractISBNFromBookInfo(child.textContent?.trim() || '') ?? isbn;
       });
     }
-    
+
     return { author, isbn };
   }
-  
+
   /**
    * Extracts thumbnail URL from book container using multiple strategies.
    * @param bookContainer - The book container element
@@ -364,10 +372,10 @@ export class PChomeHandler implements RetailerHandler {
     if (!bookThumbEl) {
       bookThumbEl = bookContainer.querySelector('.prod_img');
     }
-    
+
     return bookThumbEl?.querySelector('img')?.getAttribute('src') ?? undefined;
   }
-  
+
   /**
    * Extracts price and currency from book container.
    * @param bookContainer - The book container element
@@ -377,10 +385,10 @@ export class PChomeHandler implements RetailerHandler {
     const priceEls = bookContainer.querySelectorAll('.price_box .price .value');
     const price = priceEls.length ? parseInt((priceEls[priceEls.length - 1] as HTMLElement).textContent || '0', 10) : undefined;
     const currency = 'TWD';
-    
+
     return { price, currency };
   }
-  
+
   /**
    * Renders the Goodreads rating on a book detail page.
    * @param bookContainer - The container element for the book
@@ -388,19 +396,19 @@ export class PChomeHandler implements RetailerHandler {
    */
   private renderDetailPageBookRating(bookContainer: Element, goodreads: any): void {
     const targetElement = document.querySelector('.c-blockCombine--priceGray');
-    
+
     if (targetElement) {
       const ratingEl = BookUtils.generateBookRatingWithLink({ goodreads });
       const ratingContainer = document.createElement('div');
       ratingContainer.classList.add('bra-rating-wrapper');
       ratingContainer.appendChild(ratingEl);
-      
+
       targetElement.insertAdjacentElement('beforebegin', ratingContainer);
     } else {
       console.warn('No suitable insertion point found for detail page book rating');
     }
   }
-  
+
   /**
    * Renders the Goodreads rating for a book list item using adaptive insertion strategies.
    * @param bookEl - The book container element
@@ -413,26 +421,26 @@ export class PChomeHandler implements RetailerHandler {
       { selector: '.c-prodInfoV2__priceBar', position: 'beforebegin' as const },
       { selector: null, position: 'beforeend' as const }
     ];
-    
+
     for (const strategy of insertionStrategies) {
-      const targetElement = strategy.selector ? 
-                           bookEl.querySelector(strategy.selector) : 
-                           bookEl;
-      
+      const targetElement = strategy.selector ?
+        bookEl.querySelector(strategy.selector) :
+        bookEl;
+
       if (targetElement) {
         // Check if rating wrapper already exists to prevent duplicates
-        const existingRating = targetElement.querySelector('.bra-rating-wrapper') || 
-                             targetElement.parentElement?.querySelector('.bra-rating-wrapper');
+        const existingRating = targetElement.querySelector('.bra-rating-wrapper') ||
+          targetElement.parentElement?.querySelector('.bra-rating-wrapper');
         if (existingRating) {
           console.log('Rating already exists, skipping insertion for:', goodreads.title, 'targetElement', targetElement);
           break;
         }
-        
+
         const ratingEl = BookUtils.generateBookRatingWithLink({ goodreads });
         const ratingContainer = document.createElement('div');
         ratingContainer.classList.add('bra-rating-wrapper');
         ratingContainer.appendChild(ratingEl);
-        
+
         targetElement.insertAdjacentElement(strategy.position, ratingContainer);
         // console.log('Inserted book list item rating for:', goodreads.title, targetElement);
         break;

@@ -1,6 +1,5 @@
 import { RetailerHandler } from 'utils/ContentRouter';
 import { ChromeMessagingService, BookData } from 'utils/ChromeMessagingService';
-import { findSiblingElementBySelector, getCurrentPageRootUrl, findClosestAnchorElement } from 'utils/DomUtils';
 import * as BookUtils from 'utils/BookUtils';
 
 /**
@@ -248,117 +247,6 @@ export class PChomeHandler implements RetailerHandler {
       format: BookUtils.resolveIsDigital(originalBookTitle) ? 'ebook' : 'physical',
       isbn: isbn || undefined
     };
-  }
-
-  /**
-   * Extracts book data from a detail page container.
-   * @param bookContainer - The detail page book container
-   * @returns BookData object or null if extraction fails
-   */
-  private extractDetailPageBookData(bookContainer: Element): BookData | null {
-    // Implementation for detail page extraction
-    const titleEl = document.querySelector('#DescrbContainer .prod_name');
-    const bookTitle = titleEl?.textContent?.trim();
-
-    if (!bookTitle) {
-      return null;
-    }
-
-    const cleanTitle = BookUtils.cleanBookTitle(bookTitle);
-
-    // Extract other metadata similar to list items
-    const { author, isbn } = this.extractMetadataFromContainer(bookContainer as HTMLElement);
-    const thumbnailUrl = this.extractThumbnailFromContainer(bookContainer as HTMLElement);
-    const { price, currency } = this.extractPriceFromContainer(bookContainer as HTMLElement);
-
-    return {
-      source: 'pchome',
-      title: cleanTitle,
-      author,
-      url: location.href,
-      thumbnailUrl,
-      price,
-      currency,
-      format: BookUtils.resolveIsDigital(bookTitle) ? 'ebook' : 'physical',
-      isbn
-    };
-  }
-
-  /**
-   * Extracts title from title element, handling complex layouts with multiple child nodes.
-   * @param titleElement - The title element to extract from
-   * @returns Extracted title or null
-   */
-  private extractTitleFromElement(titleElement: HTMLElement): string | null {
-    if (!titleElement) return null;
-
-    // Handle simple case first
-    if (titleElement.childNodes.length === 1) {
-      return titleElement.textContent?.trim() || null;
-    }
-
-    // Handle complex case (region pages) - iterate through child nodes
-    let bookTitle = '';
-    titleElement.childNodes.forEach(node => {
-      if (node.nodeType === Node.TEXT_NODE || node.nodeName.toLowerCase() === 'b') {
-        bookTitle += node.textContent;
-      }
-    });
-
-    // Fallback to last text node (grid/row pages)
-    if (!bookTitle && titleElement.childNodes.length) {
-      const lastNode = titleElement.childNodes[titleElement.childNodes.length - 1] as Text;
-      bookTitle = lastNode.textContent || '';
-    }
-
-    return bookTitle.trim() || null;
-  }
-
-  /**
-   * Extracts author and ISBN metadata from book container.
-   * @param bookContainer - The book container element
-   * @returns Object containing author and isbn
-   */
-  private extractMetadataFromContainer(bookContainer: HTMLElement): { author?: string, isbn?: string } {
-    const bookInfoEl = bookContainer.querySelector('.msg_box');
-    let author: string | undefined, isbn: string | undefined;
-
-    if (bookInfoEl) {
-      Array.from(bookInfoEl.children).forEach((child: HTMLElement) => {
-        author = BookUtils.extractAuthorFromBookInfo(child.textContent?.trim() || '') ?? author;
-        isbn = BookUtils.extractISBNFromBookInfo(child.textContent?.trim() || '') ?? isbn;
-      });
-    }
-
-    return { author, isbn };
-  }
-
-  /**
-   * Extracts thumbnail URL from book container using multiple strategies.
-   * @param bookContainer - The book container element
-   * @returns Thumbnail URL or undefined
-   */
-  private extractThumbnailFromContainer(bookContainer: HTMLElement): string | undefined {
-    // Try different thumbnail extraction strategies
-    let bookThumbEl = findSiblingElementBySelector(bookContainer, 'a.prod_img');
-    if (!bookThumbEl) {
-      bookThumbEl = bookContainer.querySelector('.prod_img');
-    }
-
-    return bookThumbEl?.querySelector('img')?.getAttribute('src') ?? undefined;
-  }
-
-  /**
-   * Extracts price and currency from book container.
-   * @param bookContainer - The book container element
-   * @returns Object containing price and currency
-   */
-  private extractPriceFromContainer(bookContainer: HTMLElement): { price?: number, currency: string } {
-    const priceEls = bookContainer.querySelectorAll('.price_box .price .value');
-    const price = priceEls.length ? parseInt((priceEls[priceEls.length - 1] as HTMLElement).textContent || '0', 10) : undefined;
-    const currency = 'TWD';
-
-    return { price, currency };
   }
 
   /**

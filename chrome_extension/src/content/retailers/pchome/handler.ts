@@ -21,31 +21,35 @@ export class PChomeHandler implements RetailerHandler {
 
   /**
    * Main entry point for processing PChome pages.
-   * Routes to appropriate handler based on URL pattern.
+   * Unified approach that processes both detail content and book listings.
    * @param document - The document to process
    */
   handle(document: Document): void {
     console.log('PChomeHandler: Handling page', location.href);
-
+    
     // Add retailer theme class
     document.body.classList.add('bra-retailer-pchome');
-
-    if (/24h\.pchome\.com\.tw\/books\/prod.*/.test(location.href)) {
-      this.handleBookDetailPage();
-    } else {
-      this.handleListingPages();
-    }
+    
+    // Process current page content
+    this.processBookDetails();
+    this.processBookLists();
+    
+    // Start monitoring for dynamic changes
+    this.startObserver();
   }
 
   /**
-   * Handles individual book detail pages.
-   * Processes the main book information and fetches Goodreads rating.
+   * Processes detail page content if we're on a detail page URL.
+   * Only handles the main book detail, not book listings.
    */
-  private handleBookDetailPage(): void {
-    console.log('handleBookDetailPage')
+  private processBookDetails(): void {
+    // Only process if we're on a detail page URL
+    if (!/24h\.pchome\.com\.tw\/books\/prod.*/.test(location.href)) {
+      return;
+    }
 
     const bookContainer = document.querySelector('#ProdBriefing');
-
+    
     if (!bookContainer || bookContainer.classList.contains('bra-processed')) {
       return;
     }
@@ -66,25 +70,8 @@ export class PChomeHandler implements RetailerHandler {
         this.renderDetailPageBookRating(bookContainer, response);
       }
     });
-
-    // Also process any lazy-loaded book listings on the detail page
-    this.processBookLists();
-    
-    // Set up observer for dynamically loaded book lists
-    this.startBookListObserver();
   }
 
-  /**
-   * Handles listing pages, region pages, and store pages.
-   * Processes existing book lists and sets up dynamic content monitoring.
-   */
-  private handleListingPages(): void {
-    // Process any books that are already loaded
-    this.processBookLists();
-
-    // Set up observer for dynamically loaded content
-    this.startBookListObserver();
-  }
 
   /**
    * Processes all book lists on the current page using generic link finding.
@@ -131,15 +118,17 @@ export class PChomeHandler implements RetailerHandler {
   }
 
   /**
-   * Sets up a MutationObserver to monitor for dynamically loaded book content.
-   * Automatically processes new books as they appear and stops after 30 seconds.
+   * Sets up a MutationObserver to monitor for dynamically loaded content.
+   * Processes both detail content and book listings when DOM changes occur.
    */
-  private startBookListObserver(): void {
-    // Use MutationObserver to watch for dynamically loaded book lists
+  private startObserver(): void {
+    // Use MutationObserver to watch for dynamically loaded content
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-          this.processBookLists();
+          // When DOM changes, re-process everything
+          this.processBookDetails(); // Will only process if on detail URL
+          this.processBookLists();   // Always process book listings
         }
       });
     });
@@ -150,15 +139,11 @@ export class PChomeHandler implements RetailerHandler {
       subtree: true
     });
 
-    // Also process any books that are already loaded (delayed for dynamic content)
+    // Also process any content that loads shortly after (delayed for dynamic content)
     setTimeout(() => {
+      this.processBookDetails();
       this.processBookLists();
     }, 100);
-
-    // // Stop observing after 30 seconds
-    // setTimeout(() => {
-    //   observer.disconnect();
-    // }, 60*1000);
   }
 
   /**
@@ -213,17 +198,6 @@ export class PChomeHandler implements RetailerHandler {
       }
     }
 
-    // // Try multiple selectors for author and ISBN
-    // const metadataSelectors = ['.msg_box'];
-    // for (const selector of metadataSelectors) {
-    //   const metadataEl = bookContainer.querySelector(selector);
-    //   if (metadataEl?.textContent?.trim()) {
-    //     const text = metadataEl.textContent.trim();
-    //     author = author || BookUtils.extractAuthorFromBookInfo(text);
-    //     isbn = isbn || BookUtils.extractISBNFromBookInfo(text);
-    //   }
-    // }
-
     // Try multiple selectors for thumbnail
     const thumbnailSelectors = ['.c-prodInfoV2__img img', '.swiper-wrapper img', 'img'];
     for (const selector of thumbnailSelectors) {
@@ -262,8 +236,6 @@ export class PChomeHandler implements RetailerHandler {
     }
 
     if (!bookTitle) return null;
-
-
 
     return {
       source: 'pchome',

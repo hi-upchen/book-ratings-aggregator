@@ -261,38 +261,51 @@
 // 4. BOKELAI (博客來) RETAILER STYLES
 // =========================================
 
-.main_wrap {
-  .bra-rating-content {
-    margin-top: 5px;
-    font-size: 13px;
-  }
-}
+.bra-retailer-bokelai {
 
-.u-index-home {
-  .item {
-    .img-wrap {
-      .bra-rating-content {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background-color: rgba(#FFFFFF, 0.9);
-        box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
-        border-radius: 0 8px 0 8px;
-        padding: 3px 6px;
+  .main_wrap {
+    .bra-rating-content {
+      margin-top: 5px;
+      font-size: 13px;
+    }
+  }
+
+  .u-index-home {
+    .item {
+      .img-wrap {
+        .bra-rating-content {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background-color: rgba(#FFFFFF, 0.9);
+          box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
+          border-radius: 0 8px 0 8px;
+          padding: 3px 6px;
+        }
       }
     }
   }
-}
 
-.color_books {
+
   .bra-rating-content {
     font-size: 13px;
   }
 
   .type02_m014,
   .type02_m035,
-  .type02_m072 {
+  .type02_m072,
+  .type02_bd-a {
     .item {
+      .bra-rating-content {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+
+  .item {
+    .type02_bd-a {
       .bra-rating-content {
         margin: 0;
         display: flex;
@@ -313,16 +326,18 @@
       margin-top: 0;
     }
   }
-}
 
-.container_24 {
-  .table_td {
-    .bra-rating-content {
-      font-size: 13px;
-      line-height: 13px;
+
+  .container_24 {
+    .table_td {
+      .bra-rating-content {
+        font-size: 13px;
+        line-height: 13px;
+      }
     }
   }
 }
+
 
 // =========================================
 // 5. TAAZE RETAILER STYLES
@@ -362,7 +377,8 @@
     }
   }
 
-  .act_products, [class^="act_products"] {
+  .act_products,
+  [class^="act_products"] {
     position: relative;
 
     .bra-rating-content {

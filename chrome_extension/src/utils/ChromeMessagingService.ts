@@ -35,7 +35,7 @@ export class ChromeMessagingService {
           book: bookData
         }
       }, {}, (response) => {
-        console.log('Received rating for', bookData.title, response);
+        // console.log('Received rating for', bookData.title, response);
         resolve(response);
       });
     });
@@ -58,7 +58,7 @@ export class ChromeMessagingService {
         book: bookData
       }
     }, {}, (response) => {
-      console.log('Received rating for', bookData.title, response);
+      // console.log('Received rating for', bookData.title, response);
       callback(response);
     });
   }

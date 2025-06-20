@@ -26,12 +26,10 @@ chrome_extension/
 │   │   └── retailers/           # Modular retailer handlers
 │   │       ├── kobo/
 │   │       │   ├── handler.ts   # KoboHandler class implementation
-│   │       │   ├── index.ts     # Export for KoboHandler
-│   │       │   └── utils.ts     # Kobo-specific rendering utilities
+│   │       │   └── index.ts     # Export for KoboHandler
 │   │       ├── pchome/
-│   │       │   ├── handler.ts   # PChomeHandler implementation
-│   │       │   ├── index.ts     # Export for PChomeHandler
-│   │       │   └── utils.ts     # PChome-specific utilities
+│   │       │   ├── handler.ts   # PChomeHandler with unified processing
+│   │       │   └── index.ts     # Export for PChomeHandler
 │   │       ├── bokelai/
 │   │       │   ├── handler.ts   # BokelaiHandler implementation
 │   │       │   ├── index.ts     # Export for BokelaiHandler
@@ -137,6 +135,29 @@ export class RetailerHandler implements RetailerHandler {
 }
 ```
 
+#### Unified Processing Architecture (PChome)
+Modern PChome implementation uses unified processing that handles both static and dynamic content:
+
+```typescript
+handle(document: Document): void {
+  // Add retailer theme class
+  document.body.classList.add('bra-retailer-pchome');
+  
+  // Process current page content
+  this.processBookDetails();  // Only runs on detail pages
+  this.processBookLists();    // Always processes book listings
+  
+  // Start monitoring for dynamic changes
+  this.startObserver();
+}
+```
+
+Key benefits:
+- **Single Observer**: One MutationObserver handles all content changes
+- **Smart URL Detection**: `processBookDetails()` only executes on detail page URLs
+- **Set-based Deduplication**: Prevents processing the same container multiple times
+- **SPA Compatibility**: Handles JavaScript navigation without page reloads
+
 #### Key Development Practices
 - **DOM Manipulation**: Use MutationObserver for dynamically loaded content
 - **Performance**: Process only visible elements, mark processed items with `bra-processed` class
@@ -162,8 +183,16 @@ export class RetailerHandler implements RetailerHandler {
 - **Build System**: Optimized production builds with static generation where possible
 
 ### Retailer-Specific Implementation Notes
+
+#### PChome Handler Architecture
+- **Unified Processing**: Single handler processes both detail pages and book listings with shared logic
+- **SPA Navigation Support**: Handles JavaScript-based page navigation without full page reloads
+- **Price Parsing**: Robust currency handling for formats like "$238" and "$6,451"
+- **Dynamic Content**: MutationObserver monitors DOM changes for lazy-loaded content
+- **Deduplication**: Set-based container processing prevents duplicate rating injections
+
+#### Other Retailers
 - **Kobo**: Handle book detail pages, listings, search results, and homepage with MutationObserver for dynamic content
-- **PChome**: Support multiple layouts (grid, row, region pages)
 - **博客來**: Complex DOM structure, monitor for async content loading
 - **讀冊**: Multiple page types, check for dynamic content updates
 
@@ -205,6 +234,9 @@ npm run lint           # ESLint checking
 - Test caching behavior and storage cleanup functionality
 - Verify MutationObserver behavior on dynamic content loading
 - Test error handling when Goodreads data is unavailable
+- **PChome Specific**: Test SPA navigation on detail pages loaded via JavaScript
+- **PChome Specific**: Verify currency parsing for prices like "$238" and "$6,451"
+- **PChome Specific**: Check duplicate prevention on dynamically loaded book lists
 
 ### Deployment
 - **Development**: Extension loads from `dist/` folder
@@ -244,6 +276,9 @@ docker-compose down    # Stop production environment
 - **Smart Caching**: Remove old/unpopular book data to optimize storage
 - **Performance**: Only process visible book elements to avoid slowdowns
 - **Cross-site Integration**: Inject ratings seamlessly into existing retailer layouts
+- **SPA Navigation**: Handle JavaScript-based page transitions without full reloads
+- **Currency Parsing**: Robust price extraction supporting various formats ($238, $6,451)
+- **Duplicate Prevention**: Set-based container deduplication and rating wrapper detection
 
 ## Debugging Tips
 

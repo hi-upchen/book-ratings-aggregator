@@ -117,6 +117,7 @@ server/
 - CamelCase for variables and functions
 - Follow existing patterns in each retailer's content script
 - Add JSDoc comments for complex functions
+- Use Logger utility for all console output (environment-based log levels)
 
 ### Chrome Extension Development
 
@@ -163,6 +164,12 @@ Key benefits:
 - **Performance**: Process only visible elements, mark processed items with `bra-processed` class
 - **Error Handling**: Graceful fallbacks when book data is incomplete or missing
 - **Caching**: Background script manages Goodreads data caching and cleanup
+- **Logging**: Use Logger utility with appropriate log levels:
+  - `Logger.info()` - Essential status (always visible)
+  - `Logger.error()` - Critical errors (always visible)
+  - `Logger.warn()` - Important warnings (always visible)
+  - `Logger.debug()` - Detailed debugging (development only)
+  - `Logger.trace()` - Verbose tracing (development only)
 
 ### Server Development
 
@@ -248,8 +255,9 @@ npm run lint           # ESLint checking
 ### Chrome Extension Commands
 ```bash
 cd chrome_extension
-npm run start          # Development mode with Parcel hot reload
-npm run build          # Production build for extension packaging
+npm run start          # Development mode with Parcel hot reload (all logs)
+npm run build:dev      # Development build (all logs)
+npm run build          # Production build (essential logs only)
 npm run clean          # Clean Parcel cache and dist folder
 npm test               # Run Jest tests in watch mode
 npm run test:coverage  # Generate test coverage reports

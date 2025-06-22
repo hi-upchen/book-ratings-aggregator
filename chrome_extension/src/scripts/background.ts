@@ -3,6 +3,7 @@ import {
 	RetrievedGoodreadsBookInfo, 
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
+import Logger from 'utils/Logger';
 
 function isChinese(str: string): boolean {
 	// Regular expression to match Chinese characters (both simplified and traditional)
@@ -30,7 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		// Check the message type
 		if (message.type === 'greeting') {
 			// Handle greeting message
-			console.log('Received greeting from content script:', message.data);
+			Logger.debug('Received greeting from content script:', message.data);
 
 			// Send a response back to the content script
 			sendResponse({ type: 'response', data: 'Hello from the background script!' });
@@ -40,7 +41,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		} else if (message.type === 'FETCH_RATING_WITH_BOOK_TITLE') {
 			let book = message.data.book;
 			if ( !book) {
-				console.error('No book data found in message:', message);
+				Logger.error('No book data found in message:', message);
 				return
 			}
 
@@ -58,7 +59,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					sendResponse(storedData);
 				} else {
 					// Fetch from Goodreads
-					console.log('Search Goodreads:', book);
+					Logger.info('Searching Goodreads for:', book.title);
 					let response = await fetchGoodreadsRatingbyBookName(book);
 					// Save fetched data to local storage
 					const timestamp = Date.now();
@@ -96,10 +97,10 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<Ret
 	let bookTitleToSearch = title
 	if ( !containsChinese(title)) {
 		bookTitleToSearch = title
-		console.log(`Use non-chinese book name ${bookTitleToSearch} to search`)
+		Logger.debug(`Use non-chinese book name ${bookTitleToSearch} to search`)
 	} else if (subtitle && !containsChinese(subtitle)) {
 		bookTitleToSearch = subtitle
-		console.log(`Use original book name ${bookTitleToSearch} to search instead of ${title}`)
+		Logger.debug(`Use original book name ${bookTitleToSearch} to search instead of ${title}`)
 	}
 
 	// Step 1: Fetch HTML content of webpage
@@ -112,7 +113,7 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<Ret
 	const foundBookEl = $('table.tableList tr[itemtype="http://schema.org/Book"]').first();
 
 	if (!foundBookEl.length) {
-		console.warn(`Cannot find book with name ${title}`);
+		Logger.warn(`Cannot find book with name ${title}`);
 		return { found, rating, numRatings };
 	}
 
@@ -131,7 +132,7 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<Ret
 			rating = parseFloat(match[1]);
 			numRatings = parseInt(match[2].replace(/,/g, ''));
 		} else {
-			console.warn('No match found for string:', minratingTxt);
+			Logger.warn('No match found for string:', minratingTxt);
 		}
 	});
 
@@ -166,16 +167,16 @@ const cleanSomeCachedGoodreads = () => {
 					// Check conditions for deletion
 					if (!found && daysElapsed >= 3 && Math.random() < 0.3) {
 							chrome.storage.local.remove(key);
-							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+							Logger.debug(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
 					} else if (numReviews <= 100 && daysElapsed >= 7 && Math.random() < 0.3) {
 							chrome.storage.local.remove(key);
-							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+							Logger.debug(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
 					} else if (numReviews <= 1000 && daysElapsed >= 14 && Math.random() < 0.3) {
 							chrome.storage.local.remove(key);
-							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+							Logger.debug(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
 					} else if (numReviews > 1000 && daysElapsed >= 14 && Math.random() < 0.1) {
 							chrome.storage.local.remove(key);
-							console.log(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
+							Logger.debug(`remove title:${key} daysElapsed:${daysElapsed} from cache`)
 					}
 			});
 	});
@@ -201,7 +202,7 @@ const sendDataToServer = async (data) => {
 			body: JSON.stringify(data)
 		});
 		const responseData = await serverResponse.json();
-		console.log('sendDataToServer response:',
+		Logger.debug('sendDataToServer response:',
 			responseData.goodreads?.title ||
 			responseData.kobo?.title ||
 			responseData.pchome?.title ||
@@ -209,6 +210,6 @@ const sendDataToServer = async (data) => {
 			responseData.taaze?.title,
 			responseData, data);
 	} catch (error) {
-		console.error('Error sending data to server:', error);
+		Logger.error('Error sending data to server:', error);
 	}
 }

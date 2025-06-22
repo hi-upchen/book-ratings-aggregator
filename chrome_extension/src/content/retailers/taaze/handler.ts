@@ -2,6 +2,7 @@ import { RetailerHandler } from 'utils/ContentRouter';
 import { ChromeMessagingService, BookData } from 'utils/ChromeMessagingService';
 import * as BookUtils from 'utils/BookUtils';
 import * as DomUtils from 'utils/DomUtils';
+import Logger from 'utils/Logger';
 
 /**
  * Taaze (讀冊) e-commerce retailer handler for processing book pages and injecting Goodreads ratings.
@@ -25,7 +26,7 @@ export class TaazeHandler implements RetailerHandler {
    * @param document - The document to process
    */
   handle(document: Document): void {
-    console.log('TaazeHandler: Handling page', location.href);
+    Logger.info('TaazeHandler: Processing page', location.href);
     
     // Add retailer theme class
     document.body.classList.add('bra-retailer-taaze');
@@ -59,10 +60,10 @@ export class TaazeHandler implements RetailerHandler {
     bookContainer.classList.add('bra-processed');
     const bookData = this.extractBookData(bookContainer as HTMLElement);
 
-    console.log('TaazeHandler: Extracted book data', bookData);
+    Logger.debug('TaazeHandler: Extracted book data', bookData);
 
     if (!bookData) {
-      console.error('TaazeHandler: Unable to extract book data from detail page');
+      Logger.error('TaazeHandler: Unable to extract book data from detail page');
       return;
     }
 
@@ -331,7 +332,7 @@ export class TaazeHandler implements RetailerHandler {
 
       targetElement.insertAdjacentElement('beforebegin', ratingContainer);
     } else {
-      console.warn('No suitable insertion point found for detail page book rating');
+      Logger.warn('TaazeHandler: No suitable insertion point found for detail page book rating');
     }
   }
 
@@ -360,7 +361,7 @@ export class TaazeHandler implements RetailerHandler {
         const existingRating = targetElement.querySelector('.bra-rating-wrapper') ||
           targetElement.parentElement?.querySelector('.bra-rating-wrapper');
         if (existingRating) {
-          console.log('Rating already exists, skipping insertion for:', goodreads.title, 'targetElement', targetElement);
+          Logger.trace('TaazeHandler: Rating already exists, skipping insertion for:', goodreads.title);
           break;
         }
 

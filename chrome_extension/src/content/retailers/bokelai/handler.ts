@@ -2,6 +2,7 @@ import { RetailerHandler } from 'utils/ContentRouter';
 import { ChromeMessagingService, BookData } from 'utils/ChromeMessagingService';
 import * as BookUtils from 'utils/BookUtils';
 import * as DomUtils from 'utils/DomUtils';
+import Logger from 'utils/Logger';
 
 /**
  * Bokelai (博客來) e-commerce retailer handler for processing book pages and injecting Goodreads ratings.
@@ -25,7 +26,7 @@ export class BokelaiHandler implements RetailerHandler {
    * @param document - The document to process
    */
   handle(document: Document): void {
-    console.log('BokelaiHandler: Handling page', location.href);
+    Logger.info('BokelaiHandler: Processing page', location.href);
     
     // Add retailer theme class
     document.body.classList.add('bra-retailer-bokelai');
@@ -58,10 +59,10 @@ export class BokelaiHandler implements RetailerHandler {
     bookContainer.classList.add('bra-processed');
     const bookData = this.extractBookData(bookContainer as HTMLElement);
 
-    console.log('BokelaiHandler: Extracted book data', bookData);
+    Logger.debug('BokelaiHandler: Extracted book data', bookData);
 
     if (!bookData) {
-      console.error('BokelaiHandler: Unable to extract book data from detail page');
+      Logger.error('BokelaiHandler: Unable to extract book data from detail page');
       return;
     }
 
@@ -339,7 +340,7 @@ export class BokelaiHandler implements RetailerHandler {
 
       targetElement.insertAdjacentElement('beforeend', ratingContainer);
     } else {
-      console.warn('No suitable insertion point found for detail page book rating');
+      Logger.warn('BokelaiHandler: No suitable insertion point found for detail page book rating');
     }
   }
 
@@ -366,7 +367,7 @@ export class BokelaiHandler implements RetailerHandler {
         // Check if rating wrapper already exists to prevent duplicates
         const existingRating = targetElement.querySelector('.bra-rating-wrapper');
         if (existingRating) {
-          console.log('Rating already exists, skipping insertion for:', goodreads.title, 'targetElement', targetElement);
+          Logger.trace('BokelaiHandler: Rating already exists, skipping insertion for:', goodreads.title);
           break;
         }
 

@@ -6,8 +6,9 @@
   "author": "Up Chen <hi.upchen@gmail.com>",
   "license": "GPL-3.0",
   "scripts": {
-    "start": "parcel watch src/manifest.json --host localhost --config @parcel/config-webextension",
-    "build": "parcel build src/manifest.json --config @parcel/config-webextension",
+    "start": "NODE_ENV=development parcel watch src/manifest.json --host localhost --config @parcel/config-webextension",
+    "build": "NODE_ENV=production parcel build src/manifest.json --config @parcel/config-webextension",
+    "build:dev": "NODE_ENV=development parcel build src/manifest.json --config @parcel/config-webextension",
     "clean": "rm -rf dist && rm -rf .parcel-cache",
     "pack:zip": "npm run clean && npm run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. ",
     "test": "jest",

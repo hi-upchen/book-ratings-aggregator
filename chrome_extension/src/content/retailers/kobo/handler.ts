@@ -2,6 +2,7 @@ import { RetailerHandler } from 'utils/ContentRouter';
 import { ChromeMessagingService, BookData } from 'utils/ChromeMessagingService';
 import { getCurrentPageRootUrl, findClosestAnchorElement } from 'utils/DomUtils';
 import * as BookUtils from 'utils/BookUtils';
+import Logger from 'utils/Logger';
 
 /**
  * Kobo e-commerce retailer handler for processing book pages and injecting Goodreads ratings.
@@ -25,7 +26,7 @@ export class KoboHandler implements RetailerHandler {
    * @param document - The document to process
    */
   handle(document: Document): void {
-    console.log('KoboHandler: Handling page', location.href);
+    Logger.info('KoboHandler: Processing page', location.href);
     
     // Add retailer theme class
     document.documentElement.classList.add('bra-retailer-kobo');
@@ -149,7 +150,7 @@ export class KoboHandler implements RetailerHandler {
       // Insert the rating
       targetElement.insertAdjacentElement('beforebegin', ratingContainer);
     } else {
-      console.warn('No suitable insertion point found for detail page book rating');
+      Logger.warn('KoboHandler: No suitable insertion point found for detail page book rating');
     }
   }
 
@@ -333,9 +334,9 @@ export class KoboHandler implements RetailerHandler {
       // Insert the rating directly
       targetElement.insertAdjacentElement('afterend', ratingContainer);
 
-      console.log('Inserted book list item rating for:', goodreads.title, targetElement);
+      Logger.trace('KoboHandler: Inserted book list item rating for:', goodreads.title);
     } else {
-      console.log('No suitable insertion point found for book list item rating');
+      Logger.trace('KoboHandler: No suitable insertion point found for book list item rating');
     }
   }
 }

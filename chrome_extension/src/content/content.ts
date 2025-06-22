@@ -1,10 +1,11 @@
-console.log('Content script executed!');
-
+import Logger from 'utils/Logger';
 import { ContentRouter } from 'utils/ContentRouter';
 import { KoboHandler } from './retailers/kobo';
 import { PChomeHandler } from './retailers/pchome';
 import { BokelaiHandler } from './retailers/bokelai';
 import { TaazeHandler } from './retailers/taaze';
+
+Logger.info('Book Ratings Aggregator extension loaded');
 
 // Create router instance
 const router = new ContentRouter();
@@ -16,7 +17,7 @@ router.register(new BokelaiHandler());
 router.register(new TaazeHandler());
 
 // Log registered handlers for debugging
-console.log('Registered handlers:', router.getRegisteredHandlers());
+Logger.debug('Registered handlers:', router.getRegisteredHandlers());
 
 // Route to appropriate handler based on current URL
 router.route();

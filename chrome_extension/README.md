@@ -57,6 +57,46 @@ Visit any supported book retailer site - ratings should appear automatically aft
 
 The extension will show Goodreads ratings next to book listings and on detail pages.
 
+## Building for Production
+
+### Production Build
+Create optimized build for deployment:
+```bash
+cd chrome_extension
+npm run build
+```
+
+### Create Distribution Package
+Generate zip file ready for Chrome Web Store:
+```bash
+npm run pack:zip
+```
+
+This command:
+1. Cleans previous builds (`dist/` and `.parcel-cache/`)
+2. Builds production version with optimized code
+3. Creates `book-ratings-aggregator.zip` in project root
+
+### Other Build Commands
+```bash
+# Development build (includes debug logs)
+npm run build:dev
+
+# Clean build cache
+npm run clean
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Build Output
+- **Production**: Minified code, only essential logs (info/warn/error)
+- **Development**: Full debug logging, unminified for debugging
+- **Distribution**: Ready-to-deploy zip file for Chrome Web Store
+
 ## Architecture
 
 - **Chrome Extension**: Content scripts for each retailer website

@@ -77,6 +77,21 @@ This command:
 2. Builds production version with optimized code
 3. Creates `book-ratings-aggregator.zip` in project root
 
+### Publish to Chrome Web Store
+One command to build, package, upload, and publish:
+```bash
+npm run release
+```
+
+Requires `.env` with Chrome Web Store API credentials (see `.env.sample`).
+
+### Run E2E Tests
+```bash
+npm run test:e2e
+```
+
+Launches Chromium with the extension loaded and verifies rating injection on PChome, Kobo, and Taaze.
+
 ### Other Build Commands
 ```bash
 # Development build (includes debug logs)
@@ -85,7 +100,7 @@ npm run build:dev
 # Clean build cache
 npm run clean
 
-# Run tests
+# Run unit tests
 npm test
 
 # Run tests with coverage

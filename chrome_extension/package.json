@@ -11,6 +11,10 @@
     "build:dev": "NODE_ENV=development parcel build src/manifest.json --config @parcel/config-webextension",
     "clean": "rm -rf dist && rm -rf .parcel-cache",
     "pack:zip": "npm run clean && npm run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. ",
+    "test:e2e": "playwright test e2e/",
+    "cws:upload": "chrome-webstore-upload upload --source book-ratings-aggregator.zip",
+    "cws:publish": "chrome-webstore-upload publish",
+    "release": "npm run pack:zip && npm run cws:upload && npm run cws:publish",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -22,6 +26,7 @@
     "@types/chrome": "^0.0.263",
     "@types/jest": "^29.5.12",
     "buffer": "^5.5.0||^6.0.0",
+    "chrome-webstore-upload-cli": "^3.5.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "parcel": "^2.12.0",

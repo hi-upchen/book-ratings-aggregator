@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "顯示書評分數 | 在 博客來,讀冊,Kobo,Pchome書店顯示 Goodreads 書評分數",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"icons": {
 		"16": "images/book-rating.png",
 		"32": "images/book-rating.png",

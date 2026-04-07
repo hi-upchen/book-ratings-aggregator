@@ -58,13 +58,22 @@ chrome_extension/
 │   ├── popup/
 │   │   └── hello.html          # Extension popup interface
 │   └── manifest.json           # Chrome extension manifest v3
+├── e2e/                        # Playwright E2E tests
+│   ├── pchome.spec.ts          # PChome rating injection test
+│   ├── kobo.spec.ts            # Kobo rating injection test
+│   ├── taaze.spec.ts           # Taaze rating injection test
+│   ├── bokelai.spec.ts         # 博客來 rating injection test
+│   └── screenshots/            # Auto-captured test screenshots
 ├── dist/                       # Parcel build output
 ├── coverage/                   # Jest test coverage reports
 ├── node_modules/               # Dependencies
 ├── package.json                # Extension dependencies & scripts
 ├── package-lock.json
+├── playwright.config.ts        # Playwright E2E config
 ├── tsconfig.json               # TypeScript config (ES5 target)
 ├── jest.config.js              # Jest testing configuration
+├── .env                        # CWS API credentials (gitignored)
+├── .env.sample                 # CWS credential template
 ├── LICENSE
 ├── README.md
 └── privacy-policy.md
@@ -229,10 +238,18 @@ npm run lint           # ESLint checking
 ### Testing Guidelines
 
 #### Chrome Extension Testing
-- **Framework**: Jest with jsdom environment and comprehensive coverage reporting
+- **Unit Tests**: Jest with jsdom environment and comprehensive coverage reporting
 - **Test Structure**: Unit tests in `src/utils/__tests__/` with mocked Chrome APIs
 - **Coverage**: HTML and LCOV reports generated in `coverage/` directory
 - **Commands**: `npm test` (watch mode), `npm run test:coverage` (full coverage)
+
+#### E2E Testing (Playwright)
+- **Framework**: Playwright with Chromium, loads extension from `dist/` as unpacked
+- **Test Files**: `e2e/` directory with one spec per retailer (PChome, Kobo, Taaze, 博客來)
+- **Command**: `npm run test:e2e` runs all 4 retailer tests in parallel
+- **Screenshots**: Saved to `e2e/screenshots/` for visual verification
+- **How it works**: Launches Chromium with `--load-extension=dist`, navigates to retailer pages, waits for `.bra-processed` and `.bra-rating-wrapper` elements
+- **Note**: Extensions require `headless: false` — tests open visible browser windows
 
 #### Manual Testing Checklist
 - Test extension on all supported retailer websites (Kobo, PChome, 博客來, 讀冊)
@@ -244,6 +261,15 @@ npm run lint           # ESLint checking
 - **PChome Specific**: Test SPA navigation on detail pages loaded via JavaScript
 - **PChome Specific**: Verify currency parsing for prices like "$238" and "$6,451"
 - **PChome Specific**: Check duplicate prevention on dynamically loaded book lists
+
+### Chrome Web Store Publishing
+- **CLI Tool**: `chrome-webstore-upload-cli` for automated upload and publish
+- **Credentials**: OAuth2 credentials stored in `chrome_extension/.env` (gitignored)
+- **Setup**: See `chrome_extension/.env.sample` for required variables (EXTENSION_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
+- **One-command release**: `npm run release` (builds, zips, uploads, publishes)
+- **Individual steps**: `npm run cws:upload` and `npm run cws:publish`
+- **Note**: Publishing triggers Chrome Web Store review (hours to days)
+- **Version**: Must bump `version` in `src/manifest.json` before each upload
 
 ### Deployment
 - **Development**: Extension loads from `dist/` folder
@@ -261,7 +287,9 @@ npm run build          # Production build (essential logs only)
 npm run clean          # Clean Parcel cache and dist folder
 npm test               # Run Jest tests in watch mode
 npm run test:coverage  # Generate test coverage reports
+npm run test:e2e       # Run Playwright E2E tests (all 4 retailers)
 npm run pack:zip       # Create distribution zip file
+npm run release        # Build + zip + upload + publish to Chrome Web Store
 ```
 
 ### Server Commands
@@ -287,6 +315,26 @@ docker-compose down    # Stop production environment
 - **SPA Navigation**: Handle JavaScript-based page transitions without full reloads
 - **Currency Parsing**: Robust price extraction supporting various formats ($238, $6,451)
 - **Duplicate Prevention**: Set-based container deduplication and rating wrapper detection
+
+## Known Issues & Gotchas
+
+### Book Title Prefixes
+- Retailer sites prepend platform names to book titles (e.g., PChome adds "Kobo " to Kobo ebook titles)
+- `BookUtils.cleanBookTitle()` must strip these prefixes, otherwise Goodreads search returns 0 results
+- Currently handled: `Kobo`, `HyRead`, `Readmoo 讀墨`, `Pubu電子書`, `讀墨電子書`, `電子書`
+- **When adding new retailer support**: Check if the retailer prepends any prefix to book titles
+
+### Goodreads Scraping
+- Background script scrapes `goodreads.com/search` HTML using Cheerio
+- Key selectors: `table.tableList`, `a.bookTitle`, `.minirating`
+- Rating regex: `/(\d+\.\d{2}) avg rating — ([\d,]+) rating/`
+- **If ratings stop working**: First check if Goodreads changed their search page HTML structure
+- Chinese book titles often return 0 results on Goodreads; the code falls back to English subtitle if available
+
+### Retailer DOM Changes
+- Retailers (especially PChome) use React/Next.js with SSR — DOM structure can change without notice
+- Content is often loaded dynamically; always verify selectors against the **rendered** DOM, not raw HTML
+- Use Playwright E2E tests (`npm run test:e2e`) to quickly verify all 4 retailers still work
 
 ## Debugging Tips
 

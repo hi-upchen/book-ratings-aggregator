@@ -301,7 +301,9 @@ export class KoboHandler implements RetailerHandler {
       '[data-testid="rating"]', // After the kobo rating
       '[data-testid="spotlight-rating"]', // The homepage spotlight book rating
       '[data-testid="carousel-card-contributors"]', // After the author section
-      'div.kobo.star-rating'
+      'div.kobo.star-rating', // Kobo star rating widget
+      '.book-detail-line.subtitle', // Fallback: after author line (best-selling page)
+      '.book-detail-line.title', // Fallback: after title line
     ];
 
     for (const selector of insertionSelectors) {

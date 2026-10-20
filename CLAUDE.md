@@ -5,14 +5,10 @@ Chrome extension that displays Goodreads ratings on Taiwanese book retailer webs
 
 ## Architecture
 - **Chrome Extension**: Content scripts for each retailer website
-- **Next.js Server**: API endpoints with PostgreSQL database for data persistence
-- **Docker**: Production deployment configuration
 
 ## Tech Stack
 - **Frontend**: TypeScript, Chrome Extension APIs, Cheerio for web scraping
-- **Backend**: Next.js 14, PostgreSQL, Node.js
-- **Build Tools**: Parcel (extension), Next.js (server)
-- **Deployment**: Docker Compose
+- **Build Tools**: Parcel
 
 ## Current Project Structure
 
@@ -79,45 +75,6 @@ chrome_extension/
 └── privacy-policy.md
 ```
 
-### Server (`server/`)
-```
-server/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── book/
-│   │   │   │   ├── route.ts     # RESTful book API endpoints
-│   │   │   │   └── type.d.ts    # API type definitions
-│   │   │   └── search/          # Future search endpoints
-│   │   ├── layout.tsx           # Next.js root layout
-│   │   ├── page.tsx             # Homepage component
-│   │   ├── globals.css          # Global Tailwind styles
-│   │   └── favicon.ico
-│   └── lib/                     # Server utility libraries
-├── public/
-│   ├── extension-privacy.md     # Public privacy policy
-│   ├── next.svg
-│   └── vercel.svg
-├── node_modules/               # Dependencies
-├── Dockerfile                  # Production container config
-├── package.json                # Server dependencies & scripts
-├── package-lock.json
-├── tsconfig.json               # TypeScript config (ESNext)
-├── next.config.mjs             # Next.js configuration
-├── next-env.d.ts               # Next.js type definitions
-├── postcss.config.js           # PostCSS configuration
-├── tailwind.config.ts          # Tailwind CSS configuration
-└── README.md
-```
-
-### Project Root
-```
-├── docker-compose.yml          # Production deployment
-└── secrets/
-    ├── server-env.sample       # Environment template
-    └── server-env/             # Actual environment files
-```
-
 ## Development Guidelines
 
 ### Code Standards
@@ -134,7 +91,7 @@ server/
 - **Content Router System**: `ContentRouter.ts` provides URL-based routing to appropriate retailer handlers
 - **Modular Handlers**: Each retailer implements the `RetailerHandler` interface with `matches()` and `handle()` methods
 - **Unified Styling**: Single `content.scss` file with retailer-specific sections for consistent theming
-- **Background Service Worker**: Handles Goodreads API calls, data caching, and server communication
+- **Background Service Worker**: Handles Goodreads API calls and data caching
 
 #### Handler Implementation Pattern
 ```typescript
@@ -180,24 +137,6 @@ Key benefits:
   - `Logger.debug()` - Detailed debugging (development only)
   - `Logger.trace()` - Verbose tracing (development only)
 
-### Server Development
-
-#### Technology Stack
-- **Framework**: Next.js 14 with App Router architecture
-- **Database**: PostgreSQL with `pg` library and connection pooling
-- **Styling**: Tailwind CSS with PostCSS processing
-- **Deployment**: Docker containerization with production optimization
-
-#### API Endpoints
-- **POST /api/book**: Upserts book data from Chrome extension with retailer-specific tables
-- **GET /api/book**: Basic health check endpoint (returns "Hello World")
-- **Database Logic**: Intelligent handling of duplicate entries with upsert operations
-
-#### Configuration Management
-- **Environment**: Docker-based secrets management in `secrets/server-env/`
-- **Next.js Config**: Modern ESNext TypeScript target with strict type checking
-- **Build System**: Optimized production builds with static generation where possible
-
 ### Retailer-Specific Implementation Notes
 
 #### PChome Handler Architecture
@@ -212,11 +151,6 @@ Key benefits:
 - **博客來**: Complex DOM structure, monitor for async content loading
 - **讀冊**: Multiple page types, check for dynamic content updates
 
-### Database Schema
-- `goodreads_book`: Scraped Goodreads ratings and metadata
-- `kobo_book`, `pchome_book`, `bokelai_book`, `taaze_book`: Retailer-specific book data
-- All tables include: title, author, rating, price, thumbnail_url, timestamps
-
 ## Development Workflow
 
 ### Extension Development
@@ -225,14 +159,6 @@ cd chrome_extension
 npm run start          # Development mode with hot reload
 npm run build          # Production build
 npm run pack:zip       # Create distribution zip
-```
-
-### Server Development
-```bash
-cd server
-npm run dev            # Development server on localhost:3000
-npm run build          # Production build
-npm run lint           # ESLint checking
 ```
 
 ### Testing Guidelines
@@ -271,11 +197,6 @@ npm run lint           # ESLint checking
 - **Note**: Publishing triggers Chrome Web Store review (hours to days)
 - **Version**: Must bump `version` in `src/manifest.json` before each upload
 
-### Deployment
-- **Development**: Extension loads from `dist/` folder
-- **Production**: Server runs via Docker Compose on port 42093
-- **Environment**: Server environment variables in `secrets/server-env/`
-
 ## Common Commands
 
 ### Chrome Extension Commands
@@ -290,21 +211,6 @@ npm run test:coverage  # Generate test coverage reports
 npm run test:e2e       # Run Playwright E2E tests (all 4 retailers)
 npm run pack:zip       # Create distribution zip file
 npm run release        # Build + zip + upload + publish to Chrome Web Store
-```
-
-### Server Commands
-```bash
-cd server
-npm run dev            # Next.js development server on localhost:3000
-npm run build          # Production build with optimization
-npm run start          # Start production server
-npm run lint           # ESLint checking with Next.js rules
-```
-
-### Production Deployment
-```bash
-docker-compose up      # Start production server on port 42093
-docker-compose down    # Stop production environment
 ```
 
 ## Key Features Implementation
@@ -341,16 +247,10 @@ docker-compose down    # Stop production environment
 ### Chrome Extension Debugging
 - **Content Scripts**: Use Chrome DevTools Sources tab, set breakpoints in injected scripts
 - **Background Script**: Open extension details → Inspect views → service worker
-- **API Calls**: Monitor background script console for Goodreads API and server communication logs
+- **API Calls**: Monitor background script console for Goodreads API logs
 - **Storage**: Test caching with `chrome.storage.local.get(null, console.log)` in DevTools
-- **Network**: Check Network tab for failed requests to book retailer APIs or server endpoints
+- **Network**: Check Network tab for failed requests to book retailer APIs
 - **DOM Issues**: Use Elements tab to verify rating injection and CSS class application
-
-### Server Debugging
-- **API Endpoints**: Test with `curl` or Postman for `/api/book` endpoints
-- **Database**: Check PostgreSQL logs for connection and query issues
-- **Build Issues**: Use `npm run build` to verify Next.js compilation
-- **Environment**: Verify `secrets/server-env/` configuration is properly loaded
 
 ## Repository Information
 - **Author**: Up Chen <hi.upchen@gmail.com>

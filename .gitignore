@@ -131,3 +131,7 @@ dist
 
 .DS_store
 book-ratings-aggregator.zip
+# Local agent files and Playwright output
+.claude/
+chrome_extension/test-results/
+chrome_extension/playwright-report/

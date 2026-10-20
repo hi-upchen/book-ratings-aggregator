@@ -69,10 +69,14 @@ Requires `.env` with Chrome Web Store API credentials (see `.env.sample`).
 
 ### Run E2E Tests
 ```bash
+npm run build
 npm run test:e2e
 ```
 
-Launches Chromium with the extension loaded and verifies rating injection on PChome, Kobo, and Taaze.
+Runs one spec, `e2e/rating-display.spec.ts`, in headless Chromium with the extension loaded. No window opens.
+The `PAGES` list at the top has the store pages it checks: list and detail pages for Kobo, PChome, 博客來 and 讀冊.
+Goodreads is stubbed in the store checks. One extra test searches the real Goodreads.
+The JSON report is written to `playwright-report/results.json`. It is the daily monitor's input.
 
 ### Other Build Commands
 ```bash

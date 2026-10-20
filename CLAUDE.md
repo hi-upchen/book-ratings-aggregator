@@ -55,11 +55,7 @@ chrome_extension/
 │   │   └── hello.html          # Extension popup interface
 │   └── manifest.json           # Chrome extension manifest v3
 ├── e2e/                        # Playwright E2E tests
-│   ├── pchome.spec.ts          # PChome rating injection test
-│   ├── kobo.spec.ts            # Kobo rating injection test
-│   ├── taaze.spec.ts           # Taaze rating injection test
-│   ├── bokelai.spec.ts         # 博客來 rating injection test
-│   └── screenshots/            # Auto-captured test screenshots
+│   └── rating-display.spec.ts  # One data-driven check for every store page
 ├── dist/                       # Parcel build output
 ├── coverage/                   # Jest test coverage reports
 ├── node_modules/               # Dependencies
@@ -169,13 +165,15 @@ npm run pack:zip       # Create distribution zip
 - **Coverage**: HTML and LCOV reports generated in `coverage/` directory
 - **Commands**: `npm test` (watch mode), `npm run test:coverage` (full coverage)
 
-#### E2E Testing (Playwright)
-- **Framework**: Playwright with Chromium, loads extension from `dist/` as unpacked
-- **Test Files**: `e2e/` directory with one spec per retailer (PChome, Kobo, Taaze, 博客來)
-- **Command**: `npm run test:e2e` runs all 4 retailer tests in parallel
-- **Screenshots**: Saved to `e2e/screenshots/` for visual verification
-- **How it works**: Launches Chromium with `--load-extension=dist`, navigates to retailer pages, waits for `.bra-processed` and `.bra-rating-wrapper` elements
-- **Note**: Extensions require `headless: false` — tests open visible browser windows
+#### E2E Testing (Playwright) — the daily rating-display monitor
+- **Framework**: Playwright with Chromium, loads the extension from `dist/` as unpacked
+- **One spec**: `e2e/rating-display.spec.ts`. The `PAGES` list at the top has one row per store page (list and detail for Kobo, PChome, 博客來, 讀冊). Add a row to cover a new page.
+- **Command**: `npm run build && npm run test:e2e` (use `rm -rf dist .parcel-cache` first if a stale build file lingers)
+- **Headless**: Runs with `channel: 'chromium'` and `headless: true`, so no window opens. A desktop Chrome user agent and `--disable-blink-features=AutomationControlled` keep Kobo's bot filter happy.
+- **Goodreads is stubbed** in the store checks. A fixed search page answers every request, so the store checks do not depend on real Goodreads.
+- **Real Goodreads check**: One separate test, `Goodreads search returns ratings`, searches three books. It skips when Goodreads challenges every search. It fails when Goodreads answers but the parser finds nothing.
+- **Each store row checks**: the final URL is in the manifest site list, books are found (`.bra-processed`), and enough ratings are drawn (3 on list pages, 1 on detail pages). Failure messages say what to fix.
+- **Report**: `playwright-report/results.json`. It is the input for the daily alert, which runs on the owner's Mac with a Taiwan IP.
 
 #### Manual Testing Checklist
 - Test extension on all supported retailer websites (Kobo, PChome, 博客來, 讀冊)
@@ -208,7 +206,7 @@ npm run build          # Production build (essential logs only)
 npm run clean          # Clean Parcel cache and dist folder
 npm test               # Run Jest tests in watch mode
 npm run test:coverage  # Generate test coverage reports
-npm run test:e2e       # Run Playwright E2E tests (all 4 retailers)
+npm run test:e2e       # Run the Playwright rating-display monitor (headless)
 npm run pack:zip       # Create distribution zip file
 npm run release        # Build + zip + upload + publish to Chrome Web Store
 ```
@@ -240,7 +238,7 @@ npm run release        # Build + zip + upload + publish to Chrome Web Store
 ### Retailer DOM Changes
 - Retailers (especially PChome) use React/Next.js with SSR — DOM structure can change without notice
 - Content is often loaded dynamically; always verify selectors against the **rendered** DOM, not raw HTML
-- Use Playwright E2E tests (`npm run test:e2e`) to quickly verify all 4 retailers still work
+- Use the Playwright monitor (`npm run test:e2e`) to quickly verify all 4 retailers still work
 
 ## Debugging Tips
 

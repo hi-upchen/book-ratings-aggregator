@@ -187,8 +187,11 @@ export class PChomeHandler implements RetailerHandler {
     let thumbnailUrl: string | undefined = undefined;
     let price: number | undefined = undefined;
 
-    // Try multiple selectors for title
-    const titleSelectors = ['.c-prodInfoV2__title', 'h1'];
+    // Try multiple selectors for title.
+    // Search pages use .c-prodInfoV2__title. Detail pages use h1.
+    // Store and category pages put the title in a text span with a title attribute.
+    // That span comes last because search cards also have text spans for blurbs.
+    const titleSelectors = ['.c-prodInfoV2__title', 'h1', '.c-prodInfoV2__text[title]'];
     for (const selector of titleSelectors) {
       const titleEl = bookContainer.querySelector(selector);
       if (titleEl?.textContent?.trim()) {

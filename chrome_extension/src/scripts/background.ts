@@ -48,8 +48,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			// Generate the storage key
 			const storageKey = book.title + (book.subtitle ? '-' + book.subtitle : '');
 
-			let fetchedBook = {}
-
 			// Check if the book rating is stored locally
 			chrome.storage.local.get(storageKey, async (result) => {
 				const storedData = result[storageKey];
@@ -67,17 +65,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					chrome.storage.local.set({ [book.title]: { ...response, timestamp } });
 
 					sendResponse(response);
-
-					// Send goodreads data to the server
-					fetchedBook = {goodreads: {...response, title: book.title, subtitle: book.subtitle}}
-					sendDataToServer(fetchedBook);
-				}
-
-				// only send to pchome, kobo books to server when it's new to local
-				if ( !storedData || book?.isbn || book?.rating) {
-					sendDataToServer({
-						[book.source]: book
-					});
 				}
 			});
 		}
@@ -182,34 +169,3 @@ const cleanSomeCachedGoodreads = () => {
 	});
 }
 cleanSomeCachedGoodreads()
-
-
-const sendDataToServer = async (data) => {
-	try {
-		let serverUrl = '';
-
-		if (process.env.NODE_ENV === 'development') {
-				serverUrl = 'http://localhost:3000/api/book';
-		} else {
-				serverUrl = 'https://book-ratings-aggregator.runawayup.com/api/book';
-		}
-
-		const serverResponse = await fetch(serverUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		});
-		const responseData = await serverResponse.json();
-		Logger.debug('sendDataToServer response:',
-			responseData.goodreads?.title ||
-			responseData.kobo?.title ||
-			responseData.pchome?.title ||
-			responseData.bokelai?.title ||
-			responseData.taaze?.title,
-			responseData, data);
-	} catch (error) {
-		Logger.error('Error sending data to server:', error);
-	}
-}

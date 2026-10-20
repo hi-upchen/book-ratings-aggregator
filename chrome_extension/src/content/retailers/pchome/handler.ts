@@ -206,15 +206,25 @@ export class PChomeHandler implements RetailerHandler {
 
     // Try multiple selectors for title.
     // Search pages use .c-prodInfoV2__title. Detail pages use h1.
-    // Store and category pages put the title in a text span with a title attribute.
-    // That span comes last because search cards also have text spans for blurbs.
-    const titleSelectors = ['.c-prodInfoV2__title', 'h1', '.c-prodInfoV2__text[title]'];
+    const titleSelectors = ['.c-prodInfoV2__title', 'h1'];
     for (const selector of titleSelectors) {
       const titleEl = bookContainer.querySelector(selector);
       if (titleEl?.textContent?.trim()) {
         originalBookTitle = titleEl.textContent.trim();
         bookTitle = BookUtils.cleanBookTitle(titleEl.textContent.trim());
         break;
+      }
+    }
+
+    // Store pages put the book name in the title attribute of a text span.
+    // We read the attribute, not the text. Spans with an empty title hold sale labels.
+    // This runs last because search cards also have text spans for blurbs.
+    if (!bookTitle) {
+      const titleSpan = bookContainer.querySelector('span.c-prodInfoV2__text[title]:not([title=""])');
+      const spanTitle = titleSpan?.getAttribute('title')?.trim();
+      if (spanTitle) {
+        originalBookTitle = spanTitle;
+        bookTitle = BookUtils.cleanBookTitle(spanTitle);
       }
     }
 

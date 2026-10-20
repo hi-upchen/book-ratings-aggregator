@@ -65,6 +65,22 @@ describe('PChomeHandler on a store page', () => {
     expect(sendMessage.mock.calls[0][0].data.title).toBe('Claude 萬用手冊');
   });
 
+  it('skips an empty-title span and reads the book name from the next one', () => {
+    const nameSpan = '<span class="c-prodInfoV2__text" title="Claude 萬用手冊">';
+    openPage(
+      '/store/DJAA',
+      storeCardHtml.replace(
+        nameSpan,
+        '<span class="c-prodInfoV2__text" title="">滿1件享79折</span>' + nameSpan
+      )
+    );
+    answerLookupsWith({ found: false });
+    new PChomeHandler().handle(document);
+
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+    expect(sendMessage.mock.calls[0][0].data.title).toBe('Claude 萬用手冊');
+  });
+
   it('draws the rating above the price', () => {
     answerLookupsWith(foundRating);
     new PChomeHandler().handle(document);

@@ -2,6 +2,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
+  // The live Goodreads test runs only in the daily GitHub workflow.
+  testPathIgnorePatterns: ['/node_modules/', '\\.live\\.test\\.ts$'],
   testMatch: [
     '**/__tests__/**/*.test.ts',
     '**/?(*.)+(spec|test).ts'

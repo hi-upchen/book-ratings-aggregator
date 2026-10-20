@@ -165,7 +165,7 @@ npm run pack:zip       # Create distribution zip
 - **Coverage**: HTML and LCOV reports generated in `coverage/` directory
 - **Commands**: `npm test` (watch mode), `npm run test:coverage` (full coverage)
 
-#### E2E Testing (Playwright) — the daily rating-display monitor
+#### E2E Testing (Playwright)
 - **Framework**: Playwright with Chromium, loads the extension from `dist/` as unpacked
 - **One spec**: `e2e/rating-display.spec.ts`. The `PAGES` list at the top has one row per store page (list and detail for Kobo, PChome, 博客來, 讀冊). Add a row to cover a new page.
 - **Command**: `npm run build && npm run test:e2e` (use `rm -rf dist .parcel-cache` first if a stale build file lingers)
@@ -173,15 +173,8 @@ npm run pack:zip       # Create distribution zip
 - **Goodreads is stubbed** in the store checks. A fixed search page answers every request, so the store checks do not depend on real Goodreads.
 - **Real Goodreads check**: One separate test, `Goodreads search returns ratings`, searches three books. It skips when Goodreads challenges every search. It fails when Goodreads answers but the parser finds nothing.
 - **Each store row checks**: the final URL is in the manifest site list, books are found (`.bra-processed`), and enough ratings are drawn (3 on list pages, 1 on detail pages). Failure messages say what to fix.
-- **Report**: `playwright-report/results.json`. It is the input for the daily alert, which runs on the owner's Mac with a Taiwan IP.
+- **Run it from a Taiwan network.** Kobo and 博客來 block overseas and data-center addresses, so the store checks fail on GitHub runners or overseas servers.
 
-#### Daily monitor (Mac job + GitHub badge + UptimeRobot)
-- **What runs**: `monitor/run-daily.sh` runs the Playwright suite on the owner's Mac every day at 09:30 (launchd job `com.upchen.book-ratings-monitor`, installed by `monitor/install.sh`). It uses its own clone in `~/.local/share/book-ratings-monitor`.
-- **Where alerts go**: The Mac sends no message itself. The script starts the `monitor.yml` workflow with the result. The workflow holds no secrets. It turns red when a report failed or none arrived for 30 hours. UptimeRobot watches the badge and sends email and iPhone push. That is the only alert path.
-- **By hand**: `bash monitor/run-daily.sh`
-- **Log**: `~/Library/Logs/book-ratings-monitor.log`. Look for the `result: status=` line of the latest run.
-- **Summary logic**: `chrome_extension/e2e/summarize-report.mjs`, tested with `npm run test:monitor`.
-- More detail in `monitor/README.md`.
 
 #### Manual Testing Checklist
 - Test extension on all supported retailer websites (Kobo, PChome, 博客來, 讀冊)
@@ -214,7 +207,7 @@ npm run build          # Production build (essential logs only)
 npm run clean          # Clean Parcel cache and dist folder
 npm test               # Run Jest tests in watch mode
 npm run test:coverage  # Generate test coverage reports
-npm run test:e2e       # Run the Playwright rating-display monitor (headless)
+npm run test:e2e       # Run the Playwright rating-display check (headless)
 npm run pack:zip       # Create distribution zip file
 npm run release        # Build + zip + upload + publish to Chrome Web Store
 ```
@@ -246,7 +239,7 @@ npm run release        # Build + zip + upload + publish to Chrome Web Store
 ### Retailer DOM Changes
 - Retailers (especially PChome) use React/Next.js with SSR — DOM structure can change without notice
 - Content is often loaded dynamically; always verify selectors against the **rendered** DOM, not raw HTML
-- Use the Playwright monitor (`npm run test:e2e`) to quickly verify all 4 retailers still work
+- Use the Playwright check (`npm run test:e2e`) to quickly verify all 4 retailers still work
 
 ## Debugging Tips
 

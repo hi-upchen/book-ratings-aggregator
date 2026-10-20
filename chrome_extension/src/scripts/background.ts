@@ -1,9 +1,9 @@
-import * as cheerio from 'cheerio';
 import {
 	RetrievedGoodreadsBookInfo, 
 	RetrievedKoboBookInfo, 
 	RetrievedPchomeBookInfo } from 'types/RetrievedBookInfo'
 import Logger from 'utils/Logger';
+import { searchGoodreads } from 'utils/GoodreadsSearch';
 
 function isChinese(str: string): boolean {
 	// Regular expression to match Chinese characters (both simplified and traditional)
@@ -59,6 +59,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					// Fetch from Goodreads
 					Logger.info('Searching Goodreads for:', book.title);
 					let response = await fetchGoodreadsRatingbyBookName(book);
+					if (response === null) {
+						// Goodreads blocked or failed the request. Do not cache this.
+						Logger.warn('Goodreads did not answer normally for', book.title);
+						sendResponse({ found: false });
+						return;
+					}
 					// Save fetched data to local storage
 					const timestamp = Date.now();
 					chrome.storage.local.set({ [storageKey]: { ...response, timestamp } });
@@ -73,14 +79,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true
 });
 
-const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<RetrievedGoodreadsBookInfo>=> {
-	// fetchGoodreadsRatingbyBookName(bookName: string)
-	let found = false
-	let greadsBookUrl,
-		greadsBookTitle,
-		rating,
-		numRatings
-
+const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<RetrievedGoodreadsBookInfo | null>=> {
 	let bookTitleToSearch = title
 	if ( !containsChinese(title)) {
 		bookTitleToSearch = title
@@ -90,52 +89,7 @@ const fetchGoodreadsRatingbyBookName = async ({ title, subtitle }) : Promise<Ret
 		Logger.debug(`Use original book name ${bookTitleToSearch} to search instead of ${title}`)
 	}
 
-	// Step 1: Fetch HTML content of webpage
-	const response = await fetch(`https://www.goodreads.com/search?q=${encodeURIComponent(bookTitleToSearch)}`);
-	const htmlContent = await response.text();
-
-	// Step 2: Create a new HTML document
-	const $ = cheerio.load(htmlContent);
-
-	const foundBookEl = $('table.tableList tr[itemtype="http://schema.org/Book"]').first();
-
-	if (!foundBookEl.length) {
-		Logger.warn(`Cannot find book with name ${title}`);
-		return { found, rating, numRatings };
-	}
-
-	found = true
-
-	foundBookEl.find('a.bookTitle').each((index, element) => {
-		greadsBookUrl = $(element).attr('href');
-		greadsBookTitle = $(element).text().trim();
-	});
-
-	foundBookEl.find('.minirating').each((index, element) => {
-		const minratingTxt = $(element).text() || '';
-		const ratingRegex = /(\d+\.\d{2}) avg rating — ([\d,]+) rating/;
-		const match = minratingTxt.match(ratingRegex);
-		if (match) {
-			rating = parseFloat(match[1]);
-			numRatings = parseInt(match[2].replace(/,/g, ''));
-		} else {
-			Logger.warn('No match found for string:', minratingTxt);
-		}
-	});
-
-
-	// Do something with the target element
-	// console.log(targetElement);
-
-	return {
-		found,
-		rating,
-		numRatings,
-		url: `https://www.goodreads.com${greadsBookUrl}`,
-		title: greadsBookTitle
-	} || {
-		found: false
-	}
+	return searchGoodreads(bookTitleToSearch);
 }
 
 

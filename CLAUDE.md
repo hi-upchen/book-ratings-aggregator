@@ -176,6 +176,14 @@ npm run pack:zip       # Create distribution zip
 - **Run it from a Taiwan network.** Kobo and 博客來 block overseas and data-center addresses, so the store checks fail on GitHub runners or overseas servers.
 
 
+#### Daily Goodreads check (GitHub Actions + UptimeRobot)
+- **What runs**: `.github/workflows/goodreads-check.yml` runs once a day on GitHub. It searches the real Goodreads site once and parses the page with `parseGoodreadsSearch`.
+- **Red means**: Goodreads answered but the page no longer parses. Ratings stop showing for everyone. Fix the selectors in `src/utils/GoodreadsSearch.ts`.
+- **A bot challenge is not red**: the test retries 3 times, 60 seconds apart, then passes with a warning.
+- **Alerts**: UptimeRobot watches the workflow badge and sends email and iPhone push. No secrets are stored anywhere.
+- **Not covered**: store page changes. Those pages block data-center machines, so run `npm run test:e2e` by hand from a Taiwan network.
+- **By hand**: `npx jest --testPathPattern='GoodreadsSearch\.live' --testPathIgnorePatterns='/node_modules/'` (normal `npm test` skips it).
+
 #### Manual Testing Checklist
 - Test extension on all supported retailer websites (Kobo, PChome, 博客來, 讀冊)
 - Verify both Chinese and English book title handling

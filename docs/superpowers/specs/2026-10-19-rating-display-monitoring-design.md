@@ -227,3 +227,12 @@ What stays:
 - The extension fix from section 14: a failed or blocked Goodreads answer is never cached.
 
 What was removed: the Mac scheduling scripts, the GitHub workflow, the report summarizer and the UptimeRobot setup.
+
+## 16. Daily Goodreads check (2026-10-20)
+
+This is the monitor that runs now. It needs no browser, no Mac and no secrets.
+- A GitHub Actions job runs once a day. It searches Goodreads once and parses the page with the extension's own parser.
+- The job turns red only when Goodreads answers 200 and the page does not parse. That means Goodreads changed its page, which is the most common way ratings break.
+- If Goodreads sends its bot challenge on all 3 tries, the job passes with a warning. A challenge is not a code bug.
+- UptimeRobot watches the workflow badge and alerts by email and iPhone push.
+- Store page changes are not covered, because those pages block data-center machines.

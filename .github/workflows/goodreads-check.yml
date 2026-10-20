@@ -1,0 +1,30 @@
+# Searches the real Goodreads site once a day and checks the page still parses.
+# A red result means Goodreads changed its search page, so ratings stop showing.
+# UptimeRobot watches this workflow's badge and alerts by email and iPhone push.
+# The store pages are not checked here. They block data-center machines.
+name: Goodreads check
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: chrome_extension
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: chrome_extension/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npx jest --testPathPattern='GoodreadsSearch\.live' --testPathIgnorePatterns='/node_modules/'

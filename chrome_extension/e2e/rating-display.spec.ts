@@ -20,6 +20,7 @@ const PAGES: PageSpec[] = [
   { store: 'PChome', kind: 'list', url: 'https://24h.pchome.com.tw/search/%E5%8E%9F%E5%AD%90%E7%BF%92%E6%85%A3', handlerDir: 'pchome' },
   { store: 'PChome', kind: 'list', url: 'https://24h.pchome.com.tw/store/DJAA', handlerDir: 'pchome', label: 'store' },
   { store: 'PChome', kind: 'list', url: 'https://24h.pchome.com.tw/store/DJAA04', handlerDir: 'pchome', label: 'category' },
+  { store: 'PChome', kind: 'list', url: 'https://24h.pchome.com.tw/region/DJAA', handlerDir: 'pchome', label: 'region' },
   { store: 'PChome', kind: 'detail', url: 'https://24h.pchome.com.tw/books/prod/DJBP1G-A900C7B2Q', handlerDir: 'pchome' },
   { store: '博客來', kind: 'list', url: 'https://www.books.com.tw/web/sys_bbotm/books/010101', handlerDir: 'bokelai' },
   { store: '博客來', kind: 'detail', url: 'https://www.books.com.tw/products/0011060642', handlerDir: 'bokelai' },

@@ -1,5 +1,6 @@
 /**
  * @jest-environment jsdom
+ * @jest-environment-options {"url": "https://24h.pchome.com.tw/"}
  */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,7 +13,23 @@ const storeCardHtml = fs.readFileSync(
   'utf8'
 );
 
+// A real book card from the PChome computer books region page.
+// Its link is /prod/... without /books/ and the card does not say 電子書.
+const regionCardHtml = fs.readFileSync(
+  path.join(__dirname, 'fixtures', 'region-card.html'),
+  'utf8'
+);
+
 const sendMessage = chrome.runtime.sendMessage as jest.Mock;
+
+// Puts the page at this PChome path with this HTML in a fresh body.
+// Each handler watches the body, so a fresh body stops one test's handler from touching the next test.
+function openPage(pathname: string, html: string): void {
+  window.history.pushState({}, '', pathname);
+  const body = document.createElement('body');
+  body.innerHTML = html;
+  document.documentElement.replaceChild(body, document.body);
+}
 
 // Makes the fake background script answer every lookup with this response.
 function answerLookupsWith(response: object): void {
@@ -28,14 +45,11 @@ const foundRating = {
 };
 
 describe('PChomeHandler on a store page', () => {
-  // Each handler watches the body and sets a short timer.
-  // A fresh body and fake timers stop one test's handler from touching the next test.
+  // Fake timers stop the handler's short timer from running in the next test.
   beforeEach(() => {
     jest.useFakeTimers();
     sendMessage.mockReset();
-    const body = document.createElement('body');
-    body.innerHTML = storeCardHtml;
-    document.documentElement.replaceChild(body, document.body);
+    openPage('/store/DJAA', storeCardHtml);
   });
 
   afterEach(() => {
@@ -70,6 +84,45 @@ describe('PChomeHandler on a store page', () => {
   it('sends no lookup for a card without a title', () => {
     document.body.innerHTML =
       '<div class="c-listInfoGrid__item"><a href="/books/prod/X"><img src="a.jpg"></a></div>';
+    new PChomeHandler().handle(document);
+
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+});
+
+describe('PChomeHandler on a region page', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    sendMessage.mockReset();
+    answerLookupsWith(foundRating);
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('looks up a book card on a books region page', () => {
+    openPage('/region/DJAA', regionCardHtml);
+    new PChomeHandler().handle(document);
+
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+    // The title cleaner drops the edition note （第二版）.
+    expect(sendMessage.mock.calls[0][0].data.title).toBe(
+      'Excel Power Pivot｜免VBA，也能讓Excel自動統計、分析資料'
+    );
+    expect(document.querySelector('.bra-rating-wrapper')).not.toBeNull();
+  });
+
+  it('sends no lookup for the same card on a region page that is not books', () => {
+    openPage('/region/DIDI', regionCardHtml);
+    new PChomeHandler().handle(document);
+
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('sends no lookup for a non-book product on a books region page', () => {
+    openPage('/region/DJAA', regionCardHtml.replace(/DJAA2V-A900K4JLI/g, 'DIDI1A-A900K4JLI'));
     new PChomeHandler().handle(document);
 
     expect(sendMessage).not.toHaveBeenCalled();

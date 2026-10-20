@@ -12,6 +12,7 @@
     "clean": "rm -rf dist && rm -rf .parcel-cache",
     "pack:zip": "npm run clean && npm run build && cd dist && zip -r ../book-ratings-aggregator.zip * && cd .. ",
     "test:e2e": "playwright test e2e/",
+    "test:monitor": "node --test e2e/summarize-report.test.mjs",
     "cws:upload": "chrome-webstore-upload upload --source book-ratings-aggregator.zip",
     "cws:publish": "chrome-webstore-upload publish",
     "release": "npm run pack:zip && npm run cws:upload && npm run cws:publish",

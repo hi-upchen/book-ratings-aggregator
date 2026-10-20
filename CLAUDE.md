@@ -175,6 +175,14 @@ npm run pack:zip       # Create distribution zip
 - **Each store row checks**: the final URL is in the manifest site list, books are found (`.bra-processed`), and enough ratings are drawn (3 on list pages, 1 on detail pages). Failure messages say what to fix.
 - **Report**: `playwright-report/results.json`. It is the input for the daily alert, which runs on the owner's Mac with a Taiwan IP.
 
+#### Daily monitor (Mac job + GitHub badge + UptimeRobot)
+- **What runs**: `monitor/run-daily.sh` runs the Playwright suite on the owner's Mac every day at 09:30 (launchd job `com.upchen.book-ratings-monitor`, installed by `monitor/install.sh`). It uses its own clone in `~/.local/share/book-ratings-monitor`.
+- **Where alerts go**: The Mac sends no message itself. The script starts the `monitor.yml` workflow with the result. The workflow holds no secrets. It turns red when a report failed or none arrived for 30 hours. UptimeRobot watches the badge and sends email and iPhone push. That is the only alert path.
+- **By hand**: `bash monitor/run-daily.sh`
+- **Log**: `~/Library/Logs/book-ratings-monitor.log`. Look for the `result: status=` line of the latest run.
+- **Summary logic**: `chrome_extension/e2e/summarize-report.mjs`, tested with `npm run test:monitor`.
+- More detail in `monitor/README.md`.
+
 #### Manual Testing Checklist
 - Test extension on all supported retailer websites (Kobo, PChome, 博客來, 讀冊)
 - Verify both Chinese and English book title handling

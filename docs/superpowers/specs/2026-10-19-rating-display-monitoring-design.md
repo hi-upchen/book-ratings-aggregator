@@ -95,7 +95,7 @@ Each run uses a **fresh browser profile**. The extension caches ratings in brows
 
 **Path one: Telegram, with the details.**
 - At the end of a run with any failure, the job sends **one** Telegram message that lists every failed check.
-- It reuses the existing `Up' Assistant` bot (@up_assistant_ai_bot) that jars.money uses. The bot token is in 1Password at `Indie-Secrets/telegram-bot-reddit-monitor`, field `bot-token`. Do not rename that item. The Reddit monitor project reads the token by that name. The owner's chat number is listed in `~/.claude/knowledge/vercel-alerting-playbook.md`. It is kept out of this public repo.
+- It reuses the existing `Up' Assistant` bot (@up_assistant_ai_bot) that jars.money uses. The bot token is in 1Password at `Indie-Secrets/telegram-bot-reddit-monitor`, field `bot-token`. Do not rename that item. The Reddit monitor project reads the token by that name. The owner's chat number is listed in `~/.claude/knowledge/vercel-alerting-playbook.md`. Section 14 later puts it in the code, because it is useless without the token.
 - **Copy the sender from jars.money** (`src/services/alert.ts` on jars-money `origin/master`). Keep its core:
   - It never throws.
   - It times out after 8 seconds.
@@ -201,11 +201,17 @@ The owner asked for the monitor to be built and deployed with decisions made for
    - A 200 answer that cannot be parsed fails the test. That means Goodreads changed its page.
 4. **The extension stops caching a failed search.** A non-200 Goodreads answer counts as an error. The reader sees no rating for that book, and the next page view tries again.
 5. **The Mac reports to GitHub.** After each run, the job starts the `monitor.yml` workflow with the result (`ok` or `fail`) and a short summary. The Mac stores no secrets. It uses the `gh` login it already has.
-   - On a `fail` report, the workflow sends the Telegram message and ends as failed.
-   - Once a day, the workflow also checks the age of the last report. If it is older than 30 hours, or the last report failed, it sends a Telegram message and ends as failed.
+   - On a `fail` report, the workflow ends as failed (red).
+   - Once a day, the workflow also checks the age of the last report. If it is older than 30 hours, or the last report failed, it ends as failed (red).
 6. **UptimeRobot watches the workflow's status badge**, which says "passing" or "failing". It alerts by email and iPhone push when "passing" is missing. It replaces Healthchecks.io: no new account is needed, and the badge is not subject to GitHub's API request limit.
 7. **Cut:** the Chrome Web Store listing check, the 20% rated-books rule (list pages need at least 3 ratings, detail pages need 1), and GitHub-hosted store checks.
 
 **Accepted gaps:**
-- If the Mac is off for one day, nothing alerts. From the second day on, Telegram and UptimeRobot alert every day until a report arrives again.
+- If the Mac is off for one day, nothing alerts. From the second day on, UptimeRobot alerts every day until a report arrives again.
 - GitHub turns off a public repo's schedule after 60 days with no activity. The Mac's daily `gh workflow enable` turns it back on. Whether that resets the 60-day count is unverified. The staleness alert would fire well before that matters.
+
+**Current design (2026-10-20): UptimeRobot app alerts only, no Telegram.**
+The Mac only reports to GitHub. It sends no message and holds no secrets. The `monitor.yml` workflow records each report. It turns red when a report failed or none arrived for 30 hours. UptimeRobot watches the workflow badge and alerts by email and iPhone push. The text above that mentions Telegram is earlier history.
+- Failure detail is in the GitHub run and in the Mac log `~/Library/Logs/book-ratings-monitor.log`.
+- Alert delay is about 5 to 10 minutes. UptimeRobot checks every 5 minutes, and GitHub caches the badge for 5 minutes.
+- Vercel was rejected as a sender. The repo has no web app, and Vercel would add a project, storage and secrets.

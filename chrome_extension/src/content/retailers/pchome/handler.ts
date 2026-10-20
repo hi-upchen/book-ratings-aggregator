@@ -100,7 +100,8 @@ export class PChomeHandler implements RetailerHandler {
       if (href.includes('/books/prod/')) {
         shouldInclude = true;
       } else if (href.includes('/prod/')) {
-        shouldInclude = bookContainer?.textContent?.includes('電子書') || false;
+        shouldInclude = (bookContainer?.textContent?.includes('電子書') || false) ||
+          this.isBookOnBooksRegionPage(href);
       }
 
       if (!shouldInclude) return;
@@ -115,6 +116,22 @@ export class PChomeHandler implements RetailerHandler {
     uniqueContainers.forEach(container => {
       this.processBookListItem(container);
     });
+  }
+
+  /**
+   * Checks if a /prod/ link is a book on a PChome books region page.
+   *
+   * Books region pages such as /region/DJAA link to books as /prod/<id>, without /books/.
+   * All PChome bookstore regions and their product ids start with DJ.
+   * Both must match, so banners for other products on a books page get no lookup.
+   * Region pages for other goods, such as /region/DIDI, get no lookups at all.
+   * @param href - The link's href attribute
+   * @returns True if the page is a books region and the product id starts with DJ
+   */
+  private isBookOnBooksRegionPage(href: string): boolean {
+    const onBooksRegion = /^\/region\/DJ/.test(location.pathname);
+    const isBookProduct = /\/prod\/DJ/.test(href);
+    return onBooksRegion && isBookProduct;
   }
 
   /**
@@ -187,7 +204,8 @@ export class PChomeHandler implements RetailerHandler {
     let thumbnailUrl: string | undefined = undefined;
     let price: number | undefined = undefined;
 
-    // Try multiple selectors for title
+    // Try multiple selectors for title.
+    // Search pages use .c-prodInfoV2__title. Detail pages use h1.
     const titleSelectors = ['.c-prodInfoV2__title', 'h1'];
     for (const selector of titleSelectors) {
       const titleEl = bookContainer.querySelector(selector);
@@ -195,6 +213,18 @@ export class PChomeHandler implements RetailerHandler {
         originalBookTitle = titleEl.textContent.trim();
         bookTitle = BookUtils.cleanBookTitle(titleEl.textContent.trim());
         break;
+      }
+    }
+
+    // Store pages put the book name in the title attribute of a text span.
+    // We read the attribute, not the text. Spans with an empty title hold sale labels.
+    // This runs last because search cards also have text spans for blurbs.
+    if (!bookTitle) {
+      const titleSpan = bookContainer.querySelector('span.c-prodInfoV2__text[title]:not([title=""])');
+      const spanTitle = titleSpan?.getAttribute('title')?.trim();
+      if (spanTitle) {
+        originalBookTitle = spanTitle;
+        bookTitle = BookUtils.cleanBookTitle(spanTitle);
       }
     }
 

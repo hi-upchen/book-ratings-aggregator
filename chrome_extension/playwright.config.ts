@@ -7,7 +7,6 @@ export default defineConfig({
   workers: 1,
   reporter: [
     ['list'],
-    ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   use: {
     // The new headless mode runs extensions without opening a window.

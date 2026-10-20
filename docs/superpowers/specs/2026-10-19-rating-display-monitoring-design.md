@@ -215,3 +215,15 @@ The Mac only reports to GitHub. It sends no message and holds no secrets. The `m
 - Failure detail is in the GitHub run and in the Mac log `~/Library/Logs/book-ratings-monitor.log`.
 - Alert delay is about 5 to 10 minutes. UptimeRobot checks every 5 minutes, and GitHub caches the badge for 5 minutes.
 - Vercel was rejected as a sender. The repo has no web app, and Vercel would add a project, storage and secrets.
+
+## 15. Daily monitor dropped (2026-10-20) — this section overrides section 14
+
+The owner decided not to run a daily check. The reasons:
+- The store pages only load from a Taiwan network. Kobo and 博客來 block GitHub's machines and a server in Japan, and 讀冊 blocks GitHub's machines too. The only machine that passed all pages was the owner's Mac.
+- The owner did not want a scheduled job on their Mac.
+
+What stays:
+- The headless Playwright check (`chrome_extension/e2e/rating-display.spec.ts`). A developer runs it by hand with `npm run test:e2e`, from a Taiwan network.
+- The extension fix from section 14: a failed or blocked Goodreads answer is never cached.
+
+What was removed: the Mac scheduling scripts, the GitHub workflow, the report summarizer and the UptimeRobot setup.

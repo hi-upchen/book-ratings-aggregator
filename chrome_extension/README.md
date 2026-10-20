@@ -76,7 +76,7 @@ npm run test:e2e
 Runs one spec, `e2e/rating-display.spec.ts`, in headless Chromium with the extension loaded. No window opens.
 The `PAGES` list at the top has the store pages it checks: list and detail pages for Kobo, PChome, 博客來 and 讀冊.
 Goodreads is stubbed in the store checks. One extra test searches the real Goodreads.
-The JSON report is written to `playwright-report/results.json`. It is the daily monitor's input.
+Run it from a Taiwan network. Kobo and 博客來 block overseas and data-center addresses.
 
 ### Other Build Commands
 ```bash

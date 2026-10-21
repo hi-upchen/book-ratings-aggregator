@@ -1,0 +1,38 @@
+# Runs the unit tests and the production build on every pull request.
+# It also runs on every push to main.
+# It never calls Goodreads or the store sites.
+# The jest config skips the live Goodreads test.
+# The Playwright store checks need a Taiwan network, so they run by hand.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: chrome_extension
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: chrome_extension/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Unit tests
+        run: npm test -- --ci
+      - name: Production build
+        run: npm run build

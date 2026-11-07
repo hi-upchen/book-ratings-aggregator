@@ -1,40 +1,50 @@
 # Privacy Policy
 
-I takes your privacy seriously. To better protect your privacy I provide this privacy policy notice explaining the way your personal information is collected and used.
+Last updated: 2026-11-07
 
+This extension shows Goodreads ratings on Taiwanese book store pages. This policy explains what it reads, sends and stores.
 
-## Collection of Routine Information
+## What the extension reads
 
-This app track basic information about their users. This information includes, but is not limited to, IP addresses, app details, timestamps and referring pages. None of this information can personally identify specific user to this app. The information is tracked for routine administration and maintenance purposes.
+The extension runs only on these sites:
 
+- kobo.com
+- 24h.pchome.com.tw
+- books.com.tw
+- taaze.tw
 
-## Cookies
+On those pages it reads book details such as the title, subtitle, author, link, cover image link, price and ISBN. It reads them to find the matching book and to place the rating next to it. It reads nothing from other sites.
 
-Where necessary, this app uses cookies to store information about a visitor’s preferences and history in order to better serve the user and/or present the user with customized content.
+## What the extension sends
 
+For each book, the extension sends one search request to goodreads.com. The request contains the book title, or the English subtitle if the title is Chinese. It sends nothing else. It does not send your name, your account details or your browsing history.
 
-## Advertisement and Other Third Parties
+Goodreads receives these requests from your browser and may handle them under its own privacy policy.
 
-Advertising partners and other third parties may use cookies, scripts and/or web beacons to track user activities on this app in order to display advertisements and other useful information. Such tracking is done directly by the third parties through their own servers and is subject to their own privacy policies. This app has no access or control over these cookies, scripts and/or web beacons that may be used by third parties. Learn how to [opt out of Google’s cookie usage](http://www.google.com/privacy_ads.html).
+## What the extension stores
 
+The extension saves each Goodreads result in your browser's local extension storage. The result holds the Goodreads rating, the number of ratings, the Goodreads link and the time it was saved. The book title is the storage key.
 
-## Links to Third Party Websites
+The data stays on your device. The extension removes old entries over time. It starts to remove entries that are 3 to 14 days old, depending on the entry. You can remove all of it by uninstalling the extension.
 
-I have included links on this app for your use and reference. I are not responsible for the privacy policies on these websites. You should be aware that the privacy policies of these websites may differ from this own.
+## What the extension does not do
 
+- It has no analytics or tracking.
+- It shows no ads.
+- It does not sell or share your data.
+- It does not set cookies or read your cookies.
+- It does not send data to any server run by the developer.
 
-## Security
+## Permissions
 
-The security of your personal information is important to me, but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While I strive to use commercially acceptable means to protect your personal information, I cannot guarantee its absolute security.
+- **storage**: saves the Goodreads results on your device, so repeat visits are faster.
+- **Access to www.goodreads.com**: lets the extension search Goodreads for ratings.
+- **Access to the four store sites above**: lets the extension read book details and show ratings on those pages.
 
+## Changes to this policy
 
-## Changes To This Privacy Policy
+When the policy changes, the new version replaces this page and the "Last updated" date changes.
 
-This Privacy Policy is effective as of 2023/01/01 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
+## Contact
 
-I reserve the right to update or change this Privacy Policy at any time and you should check this Privacy Policy periodically. If I make any material changes to this Privacy Policy, I will notify you either through the email address you have provided me, or by placing a prominent notice on this app.
-
-
-## Contact Information
-
-For any questions or concerns regarding the privacy policy, please send me an email to hi.upchen@gmail.com
+For questions about this policy, email hi.upchen@gmail.com.
